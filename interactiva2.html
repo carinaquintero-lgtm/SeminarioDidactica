@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infografía No Lineal - Eje 2</title>
+    <style>
+        :root {
+            --bg-main: #fcfbfa;
+            --card-bg: #ffffff;
+            --border-color: #d3c9b6;
+            --text-main: #2c221e;
+            --accent-green: #4a6b5d;
+            --accent-blue: #3b82f6;
+            --accent-amber: #d97706;
+            --accent-purple: #7c3aed;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            padding: 15px;
+        }
+
+        .infographic-wrapper {
+            max-width: 850px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+
+        .info-title-container {
+            text-align: center;
+            background: #eae5d8;
+            border-bottom: 4px solid var(--accent-green);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .info-title-container h1 {
+            font-size: 1.6rem;
+            color: var(--accent-green);
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-title-container p {
+            font-style: italic;
+            color: #6b635b;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 20px;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            transition: transform 0.2s ease;
+        }
+
+        .info-card:hover {
+            box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+        }
+
+        .card-banner {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .banner-icon {
+            font-size: 1.8rem;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+
+        .banner-title-area h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #0f172a;
+        }
+
+        .banner-title-area span {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .theme-green .banner-icon { background: #e2f0d9; color: var(--accent-green); }
+        .theme-green span { color: var(--accent-green); }
+
+        .theme-blue .banner-icon { background: #eff6ff; color: var(--accent-blue); }
+        .theme-blue span { color: var(--accent-blue); }
+
+        .theme-amber .banner-icon { background: #fffbeb; color: var(--accent-amber); }
+        .theme-amber span { color: var(--accent-amber); }
+
+        .theme-purple .banner-icon { background: #f5f3ff; color: var(--accent-purple); }
+        .theme-purple span { color: var(--accent-purple); }
+
+        .card-content {
+            padding: 15px 20px;
+        }
+
+        .card-content p {
+            margin: 0 0 12px 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #334155;
+        }
+
+        .dropdown-btn {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            width: 100%;
+            padding: 10px;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .dropdown-btn:hover {
+            background: #f1f5f9;
+        }
+
+        .dropdown-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: #fafaf9;
+            padding: 0 15px;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .dropdown-content.show {
+            max-height: 250px;
+            padding: 12px 15px;
+            border-top: 1px dashed var(--border-color);
+            margin-top: 8px;
+        }
+
+        .dropdown-content p {
+            font-size: 0.85rem;
+            font-style: italic;
+            color: #475569;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="infographic-wrapper">
+        <div class="info-title-container">
+            <h1>Inclusión y Diseño Universal (DUA 3.0)</h1>
+            <p>Mapa conceptual interactivo de la Unidad 2: Diseñar sin barreras para la diversidad.</p>
+        </div>
+
+        <div class="info-grid">
+
+            <div class="info-card theme-green">
+                <div class="card-banner">
+                    <div class="banner-icon">🎯</div>
+                    <div class="banner-title-area">
+                        <span>Enfoque Proactivo</span>
+                        <h3>Diseño Universal (DUA)</h3>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <p>Anticipar y adaptar los materiales de enseñanza desde el inicio para dar respuesta a la diversidad, evitando corregir sobre la marcha.</p>
+                    <button class="dropdown-btn" onclick="toggleDropdown('dropE2_1', this)">
+                        <span>📖 Ver marco conceptual</span>
+                        <span>▼</span>
+                    </button>
+                    <div id="dropE2_1" class="dropdown-content">
+                        <p><strong>Marcos DUA 3.0:</strong> Se desplaza el foco de la adaptación individual correctiva hacia un diseño inclusivo estructural que contempla la variabilidad humana como norma.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card theme-blue">
+                <div class="card-banner">
+                    <div class="banner-icon">🧠</div>
+                    <div class="banner-title-area">
+                        <span>Redes Cerebrales</span>
+                        <h3>Los 3 Principios del DUA</h3>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <p>Estructuración de múltiples formas de motivación (el por qué), representación (el qué) y acción/expresión (el cómo).</p>
+                    <button class="dropdown-btn" onclick="toggleDropdown('dropE2_2', this)">
+                        <span>📖 Ver detalle de redes</span>
+                        <span>▼</span>
+                    </button>
+                    <div id="dropE2_2" class="dropdown-content">
+                        <p><strong>Pilares de aprendizaje:</strong> Conecta las redes afectivas, de reconocimiento y estratégicas para garantizar que cada estudiante encuentre su propio camino de acceso.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card theme-amber">
+                <div class="card-banner">
+                    <div class="banner-icon">🚧</div>
+                    <div class="banner-title-area">
+                        <span>Análisis Contextual</span>
+                        <h3>Barreras (BAP)</h3>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <p>Identificación de los factores culturales, institucionales o metodológicos que obstaculizan el aprendizaje y la participación.</p>
+                    <button class="dropdown-btn" onclick="toggleDropdown('dropE2_3', this)">
+                        <span>📖 Ver modelo social</span>
+                        <span>▼</span>
+                    </button>
+                    <div id="dropE2_3" class="dropdown-content">
+                        <p><strong>Modelo social de la discapacidad:</strong> Las barreras no residen en el déficit del alumno, sino en las restricciones que impone un entorno rígido y poco accesible.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card theme-purple">
+                <div class="card-banner">
+                    <div class="banner-icon">🔄</div>
+                    <div class="banner-title-area">
+                        <span>Paradigma Educativo</span>
+                        <h3>Inclusión vs. Integración</h3>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <p>La profunda diferencia entre exigir que el alumno se adapte al sistema o transformar el sistema para acoger a todos.</p>
+                    <button class="dropdown-btn" onclick="toggleDropdown('dropE2_4', this)">
+                        <span>📖 Ver transformación</span>
+                        <span>▼</span>
+                    </button>
+                    <div id="dropE2_4" class="dropdown-content">
+                        <p><strong>Transformación institucional:</strong> La inclusión plena implica repensar las prácticas pedagógicas y la cultura escolar para eliminar lógicas segregadoras.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function toggleDropdown(id, btn) {
+            const content = document.getElementById(id);
+            content.classList.toggle('show');
+            const arrow = btn.querySelector('span:last-child');
+            arrow.textContent = content.classList.contains('show') ? '▲' : '▼';
+        }
+    </script>
+</body>
+</html>

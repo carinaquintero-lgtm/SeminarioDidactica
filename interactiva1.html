@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infografía No Lineal - Eje 1</title>
+    <style>
+        :root {
+            --bg-main: #fcfbfa;
+            --card-bg: #ffffff;
+            --border-color: #d3c9b6;
+            --text-main: #2c221e;
+            --accent-green: #4a6b5d;
+            --accent-blue: #3b82f6;
+            --accent-amber: #d97706;
+            --accent-purple: #7c3aed;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            padding: 15px;
+        }
+
+        .infographic-wrapper {
+            max-width: 850px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+
+        /* Encabezado principal tipo infografía */
+        .info-title-container {
+            text-align: center;
+            background: #eae5d8;
+            border-bottom: 4px solid var(--accent-green);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .info-title-container h1 {
+            font-size: 1.6rem;
+            color: var(--accent-green);
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-title-container p {
+            font-style: italic;
+            color: #6b635b;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        /* Estructura de columnas no lineal (Grid) */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 20px;
+        }
+
+        /* Tarjetas estilo sección de infografía */
+        .info-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            transition: transform 0.2s ease;
+        }
+
+        .info-card:hover {
+            box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+        }
+
+        .card-banner {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .banner-icon {
+            font-size: 1.8rem;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+
+        .banner-title-area h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #0f172a;
+        }
+
+        .banner-title-area span {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Temas de colores */
+        .theme-green .banner-icon { background: #e2f0d9; color: var(--accent-green); }
+        .theme-green span { color: var(--accent-green); }
+
+        .theme-blue .banner-icon { background: #eff6ff; color: var(--accent-blue); }
+        .theme-blue span { color: var(--accent-blue); }
+
+        .theme-amber .banner-icon { background: #fffbeb; color: var(--accent-amber); }
+        .theme-amber span { color: var(--accent-amber); }
+
+        .theme-purple .banner-icon { background: #f5f3ff; color: var(--accent-purple); }
+        .theme-purple span { color: var(--accent-purple); }
+
+        /* Contenido y Desplegable */
+        .card-content {
+            padding: 15px 20px;
+        }
+
+        .card-content p {
+            margin: 0 0 12px 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #334155;
+        }
+
+        .dropdown-btn {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            width: 100%;
+            padding: 10px;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .dropdown-btn:hover {
+            background: #f1f5f9;
+        }
+
+        .dropdown-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: #fafaf9;
+            padding: 0 15px;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .dropdown-content.show {
+            max-height: 250px;
+            padding: 12px 15px;
+            border-top: 1px dashed var(--border-color);
+            margin-top: 8px;
+        }
+
+        .dropdown-content p {
+            font-size: 0.85rem;
+            font-style: italic;
+            color: #475569;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="infographic-wrapper">
+        <!-- Encabezado de la Infografía -->
+        <div class="info-title-container">
+            <h1>La Transposición y el Currículum en Tensión</h1>
+            <p>Mapa conceptual interactivo de la Unidad 1: De los marcos teóricos a la práctica docente.</p>
+        </div>
+
+        <!-- Grilla no lineal de contenido -->
+        <div class="info-grid">
+
+            <!-- Bloque 1 -->
+            <div class="info-card theme-green">
+                <div class="card-banner">
+                    <div class="banner-icon">🔄</div>
+                    <div class="banner-title-area">
+                        <span>Eje Epistemológico</span>
+                        <h3>Transposición Didáctica</h3>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <p>El desafío central de cómo el conocimiento científico erudito se transforma y adapta institucionalmente para poder ser enseñado.</p>
+                    <button class="dropdown-btn" onclick="toggleDropdown('drop1', this)">
+                        <span>📖 Ver autor clave y detalle</span>
+                        <span>▼</span>
+                    </button>
+                    <div id="drop1" class="dropdown-content">
+                        <p><strong>Yves Chevallard:</strong> Explica que el saber sufre modificaciones necesarias al salir de la comunidad científica para ingresar a la "noosfera" y llegar al aula escolar.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bloque 2 -->
+            <div class="info-card theme-blue">
+                <div class="card-banner">
+                    <div class="banner-icon">⚖️</div>
+                    <div class="banner-title-area">
+                        <span>Dimensión Sociopolítica</span>
+                        <h3>El Currículum como Selección</h3>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <p>Lejos de ser un inventario técnico neutral, el currículum manifiesta una selección cultural arbitraria atravesada por relaciones de poder.</p>
+                    <button class="dropdown-btn" onclick="toggleDropdown('drop2', this)">
+                        <span>📖 Ver perspectiva y detalle</span>
+                        <span>▼</span>
+                    </button>
+                    <div id="drop2" class="dropdown-content">
+                        <p><strong>Teorías Críticas:</strong> Analizan qué saberes se legitiman socialmente y qué otros quedan relegados o invisibilizados (currículum nulo).</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bloque 3 -->
+            <div class="info-card theme-amber">
+                <div class="card-banner">
+                    <div class="banner-icon">🎭</div>
+                    <div class="banner-title-area">
+                        <span>Práctica Institucional</span>
+                        <h3>Prescripto vs. Oculto</h3>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <p>La tensión permanente entre la norma escrita oficial y los aprendizajes invisibles que transmiten las rutinas escolares cotidianas.</p>
+                    <button class="dropdown-btn" onclick="toggleDropdown('drop3', this)">
+                        <span>📖 Ver conceptualización</span>
+                        <span>▼</span>
+                    </button>
+                    <div id="drop3" class="dropdown-content">
+                        <p><strong>Dinámica institucional:</strong> Mientras el prescripto fija los marcos formales, el currículum oculto modela conductas, valores y jerarquías a través de la convivencia diaria.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bloque 4 -->
+            <div class="info-card theme-purple">
+                <div class="card-banner">
+                    <div class="banner-icon">🧠</div>
+                    <div class="banner-title-area">
+                        <span>Espacio de Discusión</span>
+                        <h3>La Noosfera</h3>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <p>El espacio social donde interactúan los expertos, académicos y docentes debatiendo y decidiendo los saberes enseñables.</p>
+                    <button class="dropdown-btn" onclick="toggleDropdown('drop4', this)">
+                        <span>📖 Ver autor clave y detalle</span>
+                        <span>▼</span>
+                    </button>
+                    <div id="drop4" class="dropdown-content">
+                        <p><strong>Yves Chevallard:</strong> Funciona como la interfaz de vigilancia y legitimación entre la sociedad, la ciencia y el sistema educativo formal.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function toggleDropdown(id, btn) {
+            const content = document.getElementById(id);
+            content.classList.toggle('show');
+            const arrow = btn.querySelector('span:last-child');
+            arrow.textContent = content.classList.contains('show') ? '▲' : '▼';
+        }
+    </script>
+</body>
+</html>

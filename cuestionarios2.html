@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autoevaluación Eje 2 - Didáctica</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fcfbfa; color: #333; margin: 0; padding: 10px; font-size: 14px; line-height: 1.5; }
+        .quiz-container { max-width: 100%; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #d3c9b6; box-sizing: border-box; }
+        h2 { color: #4a6b5d; font-size: 1.2rem; margin-bottom: 8px; border-bottom: 1px solid #d3c9b6; padding-bottom: 5px; }
+        p { margin-bottom: 10px; color: #6b635b; font-size: 0.9rem; }
+        .quiz-item { margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px dashed #d3c9b6; }
+        .quiz-question { font-weight: bold; margin-bottom: 8px; color: #2c221e; }
+        .quiz-options { display: flex; flex-direction: column; gap: 5px; }
+        .quiz-btn { background-color: #ffffff; border: 1px solid #d3c9b6; padding: 8px 10px; text-align: left; border-radius: 4px; cursor: pointer; font-size: 0.85rem; transition: background 0.2s; font-family: inherit; }
+        .quiz-btn:hover { background-color: #f0eae1; }
+        .quiz-feedback { font-size: 0.8rem; font-style: italic; margin-top: 5px; padding: 5px; border-radius: 4px; display: none; }
+        .quiz-feedback.correct { background-color: #e2f0d9; color: #385723; border: 1px solid #c8e1b9; display: block; }
+        .quiz-feedback.incorrect { background-color: #fce4d6; color: #c65911; border: 1px solid #f8cbad; display: block; }
+        .quiz-score-box { margin-top: 15px; padding: 12px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 0.95rem; display: none; }
+        .quiz-score-box.success { background-color: #e2f0d9; color: #385723; border: 2px solid #a9d18e; display: block; }
+        .quiz-score-box.encouragement { background-color: #fff2cc; color: #806000; border: 2px solid #ffd966; display: block; }
+        .btn-reset-quiz { display: block; width: 100%; background-color: #4a6b5d; color: #ffffff; border: none; font-weight: bold; padding: 10px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; margin-top: 15px; text-align: center; }
+        .btn-reset-quiz:hover { background-color: #375145; }
+    </style>
+</head>
+<body>
+    <div class="quiz-container" id="quiz-eje2" data-total="15">
+        <h2>Autoevaluación Eje 2: Inclusión y DUA</h2>
+        <p>Respondé las 15 preguntas aleatorias sobre accesibilidad y diversidad:</p>
+        <div class="quiz-questions-wrapper"></div>
+        <div class="quiz-score-box" id="score-box-eje2"></div>
+        <button class="btn-reset-quiz" onclick="initQuiz('quiz-eje2')">🔄 Volver a intentarlo</button>
+    </div>
+
+    <script>
+        const quizData2 = [
+            { q: "1. ¿Cuál es el principio fundamental del Diseño Universal para el Aprendizaje (DUA)?", options: [
+                { text: "Adaptar los materiales de antemano para dar respuesta a la diversidad, en vez de corregir sobre la marcha.", correct: true, msg: "¡Correcto! Diseñar pensando en todos desde el inicio." },
+                { text: "Crear una única actividad estandarizada para todo el grupo.", correct: false, msg: "Incorrecto. Eso contradice la flexibilidad del DUA." },
+                { text: "Diseñar adaptaciones aisladas solo para alumnos con discapacidad.", correct: false, msg: "Incorrecto. El DUA es un diseño proactivo para todo el aula." }
+            ]},
+            { q: "2. En el marco del DUA, ¿qué abordan los tres principios principales?", options: [
+                { text: "Motivación y compromiso (por qué), Representación (qué), y Acción y Expresión (cómo).", correct: true, msg: "¡Muy bien! Son las tres redes cerebrales que contempla el DUA." },
+                { text: "Memoria, cálculo matemático y comprensión lectora.", correct: false, msg: "Incorrecto. Son dimensiones cognitivas generales." },
+                { text: "Planificación anual, clases presenciales y boletines.", correct: false, msg: "Incorrecto. Corresponde a tareas administrativas." }
+            ]},
+            { q: "3. Desde un enfoque inclusivo, ¿cómo se entienden las 'barreras para el aprendizaje y la participación' (BAP)?", options: [
+                { text: "Como factores contextuales, culturales o metodológicos que dificultan el acceso al aprendizaje.", correct: true, msg: "¡Correcto! Las barreras están en el entorno, no solo en el alumno." },
+                { text: "Como limitaciones físicas exclusivas del estudiante.", correct: false, msg: "Incorrecto. El modelo social desplaza el foco al contexto." },
+                { text: "Como faltas de disciplina cometidas en clase.", correct: false, msg: "Incorrecto. No se refieren a cuestiones de conducta." }
+            ]},
+            { q: "4. ¿Qué implica proveer múltiples formas de representación según el DUA?", options: [
+                { text: "Ofrecer la información a través de diversos formatos (auditivo, visual, textual) para facilitar la comprensión.", correct: true, msg: "¡Exacto! Desplegar opciones para que todos accedan al contenido." },
+                { text: "Obligar a leer exactamente el mismo texto impreso en papel.", correct: false, msg: "Incorrecto. Eso limita las opciones de acceso." },
+                { text: "Evaluar mediante exámenes memorísticos rígidos.", correct: false, msg: "Incorrecto. La evaluación debe ser flexible." }
+            ]},
+            { q: "5. La diferencia central entre integración escolar e inclusión plena radica en que:", options: [
+                { text: "La integración exige que el alumno se adapte al sistema; la inclusión transforma el sistema para acoger a todos.", correct: true, msg: "¡Correcto! La inclusión modifica las estructuras para que nadie quede afuera." },
+                { text: "La integración es virtual y la inclusión es presencial.", correct: false, msg: "Incorrecto. No depende de la modalidad." },
+                { text: "No hay diferencias conceptuales entre ambos términos.", correct: false, msg: "Incorrecto. Tienen posicionamientos distintos." }
+            ]},
+            { q: "6. Cuando en una propuesta didáctica se brindan opciones para regular el propio aprendizaje, se aplica el principio DUA de:", options: [
+                { text: "Compromiso y motivación (redes afectivas).", correct: true, msg: "¡Muy bien! Se enfoca en el 'por qué' del aprendizaje." },
+                { text: "Representación de la información.", correct: false, msg: "Incorrecto. Eso se refiere a la presentación de contenidos." },
+                { text: "Expresión corporal motriz.", correct: false, msg: "Incorrecto. No corresponde a esa categoría." }
+            ]},
+            { q: "7. ¿Qué rol cumple la accesibilidad digital en las aulas virtuales inclusivas?", options: [
+                { text: "Permite que los recursos en línea sean usables por personas con diversas necesidades y apoyos tecnológicos.", correct: true, msg: "¡Correcto! Garantiza el derecho de acceso digital para todos." },
+                { text: "Es un requisito menor que solo importa en carreras de informática.", correct: false, msg: "Incorrecto. Es fundamental en cualquier entorno virtual." },
+                { text: "Sustituye por completo la mediación del docente.", correct: false, msg: "Incorrecto. La tecnología acompaña, pero el docente media." }
+            ]},
+            { q: "8. Permitir que los estudiantes elijan cómo demostrar lo aprendido (podcast, mapa mental, informe) responde al principio DUA de:", options: [
+                { text: "Acción y Expresión.", correct: true, msg: "¡Exacto! Ofrece múltiples formas de demostrar el conocimiento." },
+                { text: "Representación simbólica.", correct: false, msg: "Incorrecto. Corresponde a la forma de salida/producción." },
+                { text: "Motivación afectiva externa.", correct: false, msg: "Incorrecto. Se relaciona con la ejecución." }
+            ]},
+            { q: "9. ¿Por qué el DUA rechaza el enfoque del 'alumno promedio'?", options: [
+                { text: "Porque la variabilidad humana es la norma; ningún estudiante responde exactamente al mismo patrón estándar.", correct: true, msg: "¡Correcto! El diseño debe contemplar la diversidad de perfiles." },
+                { text: "Porque las notas promedio están prohibidas por ley.", correct: false, msg: "Incorrecto. Se fundamenta en la neuroeducación." },
+                { text: "Porque los promedios matemáticos ya no se usan.", correct: false, msg: "Incorrecto. Alude a la falacia del promedio." }
+            ]},
+            { q: "10. ¿Qué significa ofrecer opciones para la autorregulación en el DUA?", options: [
+                { text: "Ayudar a los estudiantes a fijar metas personales, manejar la frustración y desarrollar autocontrol emocional.", correct: true, msg: "¡Muy bien! Promueve la autonomía y la metacognición." },
+                { text: "Dejar que cada alumno se ponga la nota que quiera sin rendir cuentas.", correct: false, msg: "Incorrecto. No se trata de autoevaluación punitiva." },
+                { text: "Imponer un régimen militar de disciplina en el aula.", correct: false, msg: "Incorrecto. Busca el desarrollo de la autonomía afectiva." }
+            ]},
+            { q: "11. ¿Cómo impactan las BAP de tipo actitudinal en una institución educativa?", options: [
+                { text: "A través de prejuicios, bajas expectativas o resistencias de la comunidad educativa hacia la inclusión.", correct: true, msg: "¡Exacto! Los prejuicios docentes o sociales son barreras complejas." },
+                { text: "Por falta de enchufes para conectar computadoras.", correct: false, msg: "Incorrecto. Eso constituiría una barrera de infraestructura." },
+                { text: "Por la escasez de libros impresos en la biblioteca.", correct: false, msg: "Incorrecto. Corresponde a barreras materiales." }
+            ]},
+            { q: "12. ¿Qué rol juegan los apoyos (andamiajes) en una propuesta inclusiva?", options: [
+                { text: "Son soportes temporales que el docente o la tecnología brindan para alcanzar autonomía.", correct: true, msg: "¡Correcto! El andamiaje se retira gradualmente." },
+                { text: "Son estructuras de cemento para sostener edificios escolares.", correct: false, msg: "Incorrecto. Es un concepto pedagógico cognitivo." },
+                { text: "Son castigos correctivos para corregir la conducta.", correct: false, msg: "Incorrecto. Los andamiajes apoyan el aprendizaje." }
+            ]},
+            { q: "13. ¿Cuál es el objetivo de proporcionar opciones para la percepción en la representación?", options: [
+                { text: "Garantizar que la información sea perceptible para estudiantes con diversas necesidades sensoriales.", correct: true, msg: "¡Muy bien! Modifica la forma en que se presenta lo sensible." },
+                { text: "Lograr que todos los alumnos dibujen perfectamente.", correct: false, msg: "Incorrecto. No busca desarrollar habilidades artísticas." },
+                { text: "Suprimir los textos escritos de la faz de la tierra.", correct: false, msg: "Incorrecto. Utiliza múltiples formatos complementarios." }
+            ]},
+            { q: "14. ¿Qué implica diseñar materiales hipermediales accesibles?", options: [
+                { text: "Incorporar subtítulos en videos, transcripciones de audios, contrastes de colores y descripciones en imágenes.", correct: true, msg: "¡Exacto! Son pautas básicas de accesibilidad web aplicadas al aula." },
+                { text: "Hacer páginas web que pesen muchos gigabytes.", correct: false, msg: "Incorrecto. El peso no define la accesibilidad." },
+                { text: "Bloquear el acceso a personas mayores de edad.", correct: false, msg: "Incorrecto. No tiene relación con restricciones etarias." }
+            ]},
+            { q: "15. En el marco inclusivo, la diversidad en el aula es valorada como:", options: [
+                { text: "Una riqueza pedagógica y una oportunidad de enriquecimiento mutuo, y no como un déficit.", correct: true, msg: "¡Excelente! La heterogeneidad es el punto de partida natural." },
+                { text: "Un obstáculo insalvable que paraliza la tarea docente.", correct: false, msg: "Incorrecto. Esa visión expulsiva es segregadora." },
+                { text: "Una estadística administrativa irrelevante.", correct: false, msg: "Incorrecto. Atraviesa todo el sentido político." }
+            ]}
+        ];
+
+        const userAnswers = {};
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function initQuiz(containerId) {
+            userAnswers[containerId] = {};
+            const container = document.getElementById(containerId);
+            const wrapper = container.querySelector('.quiz-questions-wrapper');
+            const scoreBox = document.getElementById('score-box-eje2');
+            wrapper.innerHTML = '';
+            scoreBox.innerHTML = '';
+            scoreBox.className = 'quiz-score-box';
+
+            let pool = JSON.parse(JSON.stringify(quizData2));
+            shuffleArray(pool);
+
+            pool.forEach((item, index) => {
+                const qNum = index + 1;
+                shuffleArray(item.options);
+                let opts = '';
+                item.options.forEach(opt => {
+                    opts += `<button class="quiz-btn" onclick="checkAnswer(this, '${containerId}', ${qNum}, ${opt.correct}, '${opt.msg.replace(/'/g, "\\'")}')">${opt.text}</button>`;
+                });
+                wrapper.innerHTML += `<div class="quiz-item"><div class="quiz-question">${qNum}. ${item.q.replace(/^\d+\.\s*/, '')}</div><div class="quiz-options">${opts}</div><div class="quiz-feedback"></div></div>`;
+            });
+        }
+
+        function checkAnswer(btn, containerId, qid, isCorrect, msg) {
+            const item = btn.closest('.quiz-item');
+            const buttons = item.querySelectorAll('.quiz-btn');
+            const feedback = item.querySelector('.quiz-feedback');
+            userAnswers[containerId][qid] = isCorrect;
+
+            buttons.forEach(b => { b.style.pointerEvents = 'none'; if(b === btn) b.style.fontWeight = 'bold'; });
+            feedback.textContent = msg;
+            feedback.className = isCorrect ? 'quiz-feedback correct' : 'quiz-feedback incorrect';
+
+            const total = parseInt(document.getElementById(containerId).getAttribute('data-total'));
+            if (Object.keys(userAnswers[containerId]).length === total) {
+                let score = Object.values(userAnswers[containerId]).filter(v => v === true).length;
+                const scoreBox = document.getElementById('score-box-eje2');
+                if (score >= 7) {
+                    scoreBox.innerHTML = `🎉 ¡Felicitaciones, Cari! Obtuviste ${score} de ${total} aciertos. ¡Excelente desempeño y valoración de tus logros! 🌟`;
+                    scoreBox.className = 'quiz-score-box success';
+                } else {
+                    scoreBox.innerHTML = `💪 ¡Buen intento! Obtuviste ${score} de ${total} aciertos. ¡A no aflojar! Repasá las lecturas obligatorias y volvé a intentarlo. 🚀`;
+                    scoreBox.className = 'quiz-score-box encouragement';
+                }
+            }
+        }
+        window.onload = () => initQuiz('quiz-eje2');
+    </script>
+</body>
+</html>

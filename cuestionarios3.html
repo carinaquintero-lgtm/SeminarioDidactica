@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autoevaluación Eje 3 - Didáctica</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fcfbfa; color: #333; margin: 0; padding: 10px; font-size: 14px; line-height: 1.5; }
+        .quiz-container { max-width: 100%; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #d3c9b6; box-sizing: border-box; }
+        h2 { color: #4a6b5d; font-size: 1.2rem; margin-bottom: 8px; border-bottom: 1px solid #d3c9b6; padding-bottom: 5px; }
+        p { margin-bottom: 10px; color: #6b635b; font-size: 0.9rem; }
+        .quiz-item { margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px dashed #d3c9b6; }
+        .quiz-question { font-weight: bold; margin-bottom: 8px; color: #2c221e; }
+        .quiz-options { display: flex; flex-direction: column; gap: 5px; }
+        .quiz-btn { background-color: #ffffff; border: 1px solid #d3c9b6; padding: 8px 10px; text-align: left; border-radius: 4px; cursor: pointer; font-size: 0.85rem; transition: background 0.2s; font-family: inherit; }
+        .quiz-btn:hover { background-color: #f0eae1; }
+        .quiz-feedback { font-size: 0.8rem; font-style: italic; margin-top: 5px; padding: 5px; border-radius: 4px; display: none; }
+        .quiz-feedback.correct { background-color: #e2f0d9; color: #385723; border: 1px solid #c8e1b9; display: block; }
+        .quiz-feedback.incorrect { background-color: #fce4d6; color: #c65911; border: 1px solid #f8cbad; display: block; }
+        .quiz-score-box { margin-top: 15px; padding: 12px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 0.95rem; display: none; }
+        .quiz-score-box.success { background-color: #e2f0d9; color: #385723; border: 2px solid #a9d18e; display: block; }
+        .quiz-score-box.encouragement { background-color: #fff2cc; color: #806000; border: 2px solid #ffd966; display: block; }
+        .btn-reset-quiz { display: block; width: 100%; background-color: #4a6b5d; color: #ffffff; border: none; font-weight: bold; padding: 10px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; margin-top: 15px; text-align: center; }
+        .btn-reset-quiz:hover { background-color: #375145; }
+    </style>
+</head>
+<body>
+    <div class="quiz-container" id="quiz-eje3" data-total="15">
+        <h2>Autoevaluación Eje 3: Entornos Virtuales y Evaluación</h2>
+        <p>Respondé las 15 preguntas aleatorias sobre EVA y evaluación formativa:</p>
+        <div class="quiz-questions-wrapper"></div>
+        <div class="quiz-score-box" id="score-box-eje3"></div>
+        <button class="btn-reset-quiz" onclick="initQuiz('quiz-eje3')">🔄 Volver a intentarlo</button>
+    </div>
+
+    <script>
+        const quizData3 = [
+            { q: "1. ¿Qué caracteriza fundamentalmente a la 'evaluación formativa' frente a la tradicional sumativa?", options: [
+                { text: "Su propósito central es orientar, retroalimentar y regular los aprendizajes mientras ocurren, sin reducirse a la nota final.", correct: true, msg: "¡Correcto! Acompaña el proceso para mejorarlo continuamente." },
+                { text: "Su única función es calificar numéricamente al final de un ciclo.", correct: false, msg: "Incorrecto. Esa es la característica de la evaluación sumativa." },
+                { text: "Se realiza de forma secreta sin criterios claros.", correct: false, msg: "Incorrecto. La evaluación formativa requiere total transparencia." }
+            ]},
+            { q: "2. En el diseño de Entornos Virtuales de Aprendizaje (EVA), ¿qué rol cumple la mediación pedagógica?", options: [
+                { text: "Facilita el diálogo, el vínculo y la construcción de conocimiento a través del diseño instruccional y las consignas.", correct: true, msg: "¡Muy bien! El docente diseña puentes de comunicación y saber." },
+                { text: "Es la velocidad de conexión a internet provista por la plataforma.", correct: false, msg: "Incorrecto. La conectividad es técnica, la mediación es pedagógica." },
+                { text: "Es la automatización de respuestas mediante bots sin humanos.", correct: false, msg: "Incorrecto. La IA asiste, pero la mediación es docente." }
+            ]},
+            { q: "3. ¿A qué se refiere el concepto de 'retroalimentación (feedback) constructiva'?", options: [
+                { text: "A un diálogo pedagógico que destaca logros, identifica nudos problemáticos y orienta sobre cómo mejorar.", correct: true, msg: "¡Exacto! Orienta al alumno sobre sus aciertos y caminos de mejora." },
+                { text: "A señalar únicamente los errores con una nota roja.", correct: false, msg: "Incorrecto. Eso inhibe el aprendizaje y no aporta orientaciones." },
+                { text: "A un mensaje automático de correcto/incorrecto.", correct: false, msg: "Incorrecto. Requiere profundidad pedagógica y diálogo." }
+            ]},
+            { q: "4. Al integrar tecnologías digitales e Inteligencia Artificial, la perspectiva didáctica crítica sostiene que:", options: [
+                { text: "Las herramientas deben subordinarse a un sentido político-pedagógico, promoviendo el pensamiento crítico.", correct: true, msg: "¡Correcto! La tecnología se usa con sentido crítico y emancipador." },
+                { text: "La tecnología reemplaza por completo la planificación docente.", correct: false, msg: "Incorrecto. Ninguna herramienta sustituye la tarea pedagógica." },
+                { text: "Cualquier recurso digital es válido por el solo hecho de ser moderno.", correct: false, msg: "Incorrecto. Se requiere análisis y selección didáctica rigurosa." }
+            ]},
+            { q: "5. ¿Qué implica diseñar una 'secuencia didáctica' para entornos virtuales?", options: [
+                { text: "Organizar temporal y lógicamente las actividades, los recursos asincrónicos/sincrónicos y los intercambios.", correct: true, msg: "¡Muy bien! Estructura el recorrido de enseñanza y aprendizaje." },
+                { text: "Subir archivos PDF masivos al campus sin consignas claras.", correct: false, msg: "Incorrecto. Eso genera desorientación y sobrecarga." },
+                { text: "Improvisar los encuentros de zoom clase a clase.", correct: false, msg: "Incorrecto. Requiere planificación y previsión pedagógica." }
+            ]},
+            { q: "6. Dentro de la evaluación auténtica, ¿qué tipo de tareas se priorizan?", options: [
+                { text: "Resolución de problemas situados, estudios de caso y producciones creativas del mundo real.", correct: true, msg: "¡Exacto! Desafíos cercanos a las prácticas reales y profesionales." },
+                { text: "Exámenes de opción múltiple con memorización aislada.", correct: false, msg: "Incorrecto. Eso evalúa memoria de corto plazo, no desempeño auténtico." },
+                { text: "Transcripción exacta de capítulos bibliográficos.", correct: false, msg: "Incorrecto. No evidencia comprensión ni transferencia situada." }
+            ]},
+            { q: "7. ¿Cuál es la importancia de la claridad en las consignas de trabajo en educación a distancia?", options: [
+                { text: "Evita la dispersión y frustración al explicitar qué se espera, cómo se hace y bajo qué criterios se evaluará.", correct: true, msg: "¡Correcto! Las consignas claras son el corazón de la enseñanza virtual." },
+                { text: "Permite que los alumnos resuelvan todo en segundos sin pensar.", correct: false, msg: "Incorrecto. Busca orientar, no simplificar el esfuerzo cognitivo." },
+                { text: "Reemplaza por completo las tutorías sincrónicas.", correct: false, msg: "Incorrecto. Las tutorías siguen cumpliendo un rol de sostén." }
+            ]},
+            { q: "8. El trabajo colaborativo mediado por tecnologías potencia principalmente:", options: [
+                { text: "La construcción social del conocimiento, el intercambio de perspectivas y la coautoría entre pares.", correct: true, msg: "¡Excelente! Favorece el aprendizaje entre y con otros." },
+                { text: "El aislamiento individual y la competencia extrema.", correct: false, msg: "Incorrecto. Genera dinámicas contrarias al aislamiento." },
+                { text: "La reducción drástica de las horas dedicadas al estudio.", correct: false, msg: "Incorrecto. Implica procesos profundos de co-construcción." }
+            ]},
+            { q: "9. ¿Qué diferencia principal existe entre comunicación sincrónica y asincrónica en un EVA?", options: [
+                { text: "La sincrónica ocurre en tiempo real (videoconferencias); la asincrónica no coincide en el tiempo (foros, correos).", correct: true, msg: "¡Correcto! Ambas formas deben combinarse estratégicamente." },
+                { text: "La sincrónica es obligatoria y la asincrónica está prohibida.", correct: false, msg: "Incorrecto. Las dos son valiosas herramientas de educación a distancia." },
+                { text: "La sincrónica se hace con IA y la asincrónica con papel.", correct: false, msg: "Incorrecto. Alude pura y exclusivamente a la variable temporal." }
+            ]},
+            { q: "10. ¿Cuál es el propósito central de un foro de debate académico en una plataforma virtual?", options: [
+                { text: "Generar intercambio argumentado, debate conceptual y construcción colectiva de saberes.", correct: true, msg: "¡Muy bien! No es un mero chat social, sino un espacio de intercambio teórico." },
+                { text: "Reemplazar por completo los encuentros presenciales de examen.", correct: false, msg: "Incorrecto. Es un recurso didáctico de asincronía y socialización." },
+                { text: "Publicar avisos administrativos de secretaría.", correct: false, msg: "Incorrecto. Para eso se usan carteleras institucionales." }
+            ]},
+            { q: "11. ¿Qué se entiende por 'presencia docente' en la educación en red según el modelo de indagación?", options: [
+                { text: "El diseño, la facilitación y la dirección directa de los procesos cognitivos y sociales para lograr resultados.", correct: true, msg: "¡Exacto! Muestra que el docente está activo guiando el proceso virtualmente." },
+                { text: "Estar conectado las 24 horas respondiendo mensajes privados.", correct: false, msg: "Incorrecto. No implica hiperconectividad nociva." },
+                { text: "Subir la mayor cantidad de archivos PDF posibles al campus.", correct: false, msg: "Incorrecto. La acumulación documental no asegura presencia pedagógica." }
+            ]},
+            { q: "12. ¿Por qué se considera clave el diseño instruccional en los EVA?", options: [
+                { text: "Porque anticipa, organiza y estructura pedagógicamente los materiales, actividades y recorridos de aprendizaje.", correct: true, msg: "¡Correcto! Un buen diseño instruccional previene la desorientación." },
+                { text: "Porque permite diseñar gráficos y banners vistosos para la web.", correct: false, msg: "Incorrecto. El diseño visual acompaña, pero el núcleo es pedagógico." },
+                { text: "Porque automatiza las calificaciones sin intervención docente.", correct: false, msg: "Incorrecto. No busca suplantar la evaluación formativa humana." }
+            ]},
+            { q: "13. ¿Qué rol cumplen las rúbricas de evaluación en los trabajos prácticos?", options: [
+                { text: "Explicitar con claridad los criterios y niveles de logro esperados, brindando transparencia.", correct: true, msg: "¡Muy bien! Aportan previsibilidad y guían la autoevaluación." },
+                { text: "Dificultar la corrección del docente con tablas extensas.", correct: false, msg: "Incorrecto. Facilitan una devolución fundamentada y objetiva." },
+                { text: "Sustituir por completo los comentarios personalizados.", correct: false, msg: "Incorrecto. La rúbrica complementa el feedback cualitativo." }
+            ]},
+            { q: "14. ¿Cómo incide la sobrecarga de información (infoxicación) en los entornos virtuales?", options: [
+                { text: "Genera fatiga cognitiva y desorientación si los docentes no curan, seleccionan y jerarquizan los recursos.", correct: true, msg: "¡Correcto! Por eso la curaduría de contenidos es una tarea fundamental." },
+                { text: "Mejora automáticamente el rendimiento académico general.", correct: false, msg: "Incorrecto. Al contrario, colapsa la capacidad de procesamiento." },
+                { text: "Acelera la velocidad de internet en los hogares.", correct: false, msg: "Incorrecto. Es un fenómeno cognitivo y comunicacional." }
+            ]},
+            { q: "15. ¿Qué significa evaluar para la comprensión en didácticas mediadas por tecnologías?", options: [
+                { text: "Proponer desafíos donde los estudiantes deban transferir conceptos a situaciones nuevas y argumentar.", correct: true, msg: "¡Excelente! Supera la simple repetición memorística de datos." },
+                { text: "Tomar múltiples choice con cronómetro estricto.", correct: false, msg: "Incorrecto. Eso mide velocidad y memoria, no comprensión profunda." },
+                { text: "Hacer que los alumnos copien textual la bibliografía.", correct: false, msg: "Incorrecto. La copia literal no demuestra apropiación conceptual." }
+            ]}
+        ];
+
+        const userAnswers = {};
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function initQuiz(containerId) {
+            userAnswers[containerId] = {};
+            const container = document.getElementById(containerId);
+            const wrapper = container.querySelector('.quiz-questions-wrapper');
+            const scoreBox = document.getElementById('score-box-eje3');
+            wrapper.innerHTML = '';
+            scoreBox.innerHTML = '';
+            scoreBox.className = 'quiz-score-box';
+
+            let pool = JSON.parse(JSON.stringify(quizData3));
+            shuffleArray(pool);
+
+            pool.forEach((item, index) => {
+                const qNum = index + 1;
+                shuffleArray(item.options);
+                let opts = '';
+                item.options.forEach(opt => {
+                    opts += `<button class="quiz-btn" onclick="checkAnswer(this, '${containerId}', ${qNum}, ${opt.correct}, '${opt.msg.replace(/'/g, "\\'")}')">${opt.text}</button>`;
+                });
+                wrapper.innerHTML += `<div class="quiz-item"><div class="quiz-question">${qNum}. ${item.q.replace(/^\d+\.\s*/, '')}</div><div class="quiz-options">${opts}</div><div class="quiz-feedback"></div></div>`;
+            });
+        }
+
+        function checkAnswer(btn, containerId, qid, isCorrect, msg) {
+            const item = btn.closest('.quiz-item');
+            const buttons = item.querySelectorAll('.quiz-btn');
+            const feedback = item.querySelector('.quiz-feedback');
+            userAnswers[containerId][qid] = isCorrect;
+
+            buttons.forEach(b => { b.style.pointerEvents = 'none'; if(b === btn) b.style.fontWeight = 'bold'; });
+            feedback.textContent = msg;
+            feedback.className = isCorrect ? 'quiz-feedback correct' : 'quiz-feedback incorrect';
+
+            const total = parseInt(document.getElementById(containerId).getAttribute('data-total'));
+            if (Object.keys(userAnswers[containerId]).length === total) {
+                let score = Object.values(userAnswers[containerId]).filter(v => v === true).length;
+                const scoreBox = document.getElementById('score-box-eje3');
+                if (score >= 7) {
+                    scoreBox.innerHTML = `🎉 ¡Felicitaciones, Cari! Obtuviste ${score} de ${total} aciertos. ¡Excelente desempeño y valoración de tus logros! 🌟`;
+                    scoreBox.className = 'quiz-score-box success';
+                } else {
+                    scoreBox.innerHTML = `💪 ¡Buen intento! Obtuviste ${score} de ${total} aciertos. ¡A no aflojar! Repasá las lecturas obligatorias y volvé a intentarlo. 🚀`;
+                    scoreBox.className = 'quiz-score-box encouragement';
+                }
+            }
+        }
+        window.onload = () => initQuiz('quiz-eje3');
+    </script>
+</body>
+</html>

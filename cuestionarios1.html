@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autoevaluación Eje 1 - Didáctica</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fcfbfa; color: #333; margin: 0; padding: 10px; font-size: 14px; line-height: 1.5; }
+        .quiz-container { max-width: 100%; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #d3c9b6; box-sizing: border-box; }
+        h2 { color: #4a6b5d; font-size: 1.2rem; margin-bottom: 8px; border-bottom: 1px solid #d3c9b6; padding-bottom: 5px; }
+        p { margin-bottom: 10px; color: #6b635b; font-size: 0.9rem; }
+        .quiz-item { margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px dashed #d3c9b6; }
+        .quiz-question { font-weight: bold; margin-bottom: 8px; color: #2c221e; }
+        .quiz-options { display: flex; flex-direction: column; gap: 5px; }
+        .quiz-btn { background-color: #ffffff; border: 1px solid #d3c9b6; padding: 8px 10px; text-align: left; border-radius: 4px; cursor: pointer; font-size: 0.85rem; transition: background 0.2s; font-family: inherit; }
+        .quiz-btn:hover { background-color: #f0eae1; }
+        .quiz-feedback { font-size: 0.8rem; font-style: italic; margin-top: 5px; padding: 5px; border-radius: 4px; display: none; }
+        .quiz-feedback.correct { background-color: #e2f0d9; color: #385723; border: 1px solid #c8e1b9; display: block; }
+        .quiz-feedback.incorrect { background-color: #fce4d6; color: #c65911; border: 1px solid #f8cbad; display: block; }
+        .quiz-score-box { margin-top: 15px; padding: 12px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 0.95rem; display: none; }
+        .quiz-score-box.success { background-color: #e2f0d9; color: #385723; border: 2px solid #a9d18e; display: block; }
+        .quiz-score-box.encouragement { background-color: #fff2cc; color: #806000; border: 2px solid #ffd966; display: block; }
+        .btn-reset-quiz { display: block; width: 100%; background-color: #4a6b5d; color: #ffffff; border: none; font-weight: bold; padding: 10px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; margin-top: 15px; text-align: center; }
+        .btn-reset-quiz:hover { background-color: #375145; }
+    </style>
+</head>
+<body>
+    <div class="quiz-container" id="quiz-eje1" data-total="15">
+        <h2>Autoevaluación Eje 1: Currículum y Transposición</h2>
+        <p>Respondé las 15 preguntas aleatorias sobre las lecturas obligatorias:</p>
+        <div class="quiz-questions-wrapper"></div>
+        <div class="quiz-score-box" id="score-box-eje1"></div>
+        <button class="btn-reset-quiz" onclick="initQuiz('quiz-eje1')">🔄 Volver a intentarlo</button>
+    </div>
+
+    <script>
+        const quizData1 = [
+            { q: "1. ¿Cómo define Yves Chevallard el concepto de 'transposición didáctica'?", options: [
+                { text: "Como el proceso por el cual el saber científico se transforma en un saber enseñado apto para las aulas.", correct: true, msg: "¡Correcto! Es la adaptación del saber sabido al saber enseñado." },
+                { text: "Como la traducción literal de manuales extranjeros.", correct: false, msg: "Incorrecto. No se trata de traducción idiomática." },
+                { text: "Como el cambio de modalidad presencial a virtual.", correct: false, msg: "Incorrecto. Es un concepto teórico sobre el saber." }
+            ]},
+            { q: "2. Desde una perspectiva sociopolítica y cultural, el currículum escolar es considerado:", options: [
+                { text: "Una selección cultural arbitraria e historizada que refleja relaciones de poder.", correct: true, msg: "¡Exacto! El currículum no es neutral, expresa pujas culturales." },
+                { text: "Un listado estrictamente técnico y neutral ordenado por el Estado.", correct: false, msg: "Incorrecto. Las teorías críticas descartan la neutralidad." },
+                { text: "Un manual estricto sin posibilidad de contextualización.", correct: false, msg: "Incorrecto. El docente recontextualiza el currículum." }
+            ]},
+            { q: "3. ¿Qué diferencia principal existe entre el currículum prescripto y el oculto?", options: [
+                { text: "El prescripto es el documento oficial; el oculto abarca aprendizajes no explícitos en rutinas y vínculos.", correct: true, msg: "¡Correcto! El currículum oculto transmite valores implícitos cotidianos." },
+                { text: "El prescripto es el que dan los alumnos y el oculto lo hace el director.", correct: false, msg: "Incorrecto. No define los roles institucionales." },
+                { text: "No existe ninguna diferencia teórica entre ambos.", correct: false, msg: "Incorrecto. Son dimensiones distintas de la práctica." }
+            ]},
+            { q: "4. En el marco de las teorías de la enseñanza, ¿qué implica una didáctica de carácter crítico?", options: [
+                { text: "Promover la reflexión problematizadora, la autonomía y la revisión de las prácticas sociales.", correct: true, msg: "¡Muy bien! Apunta a la emancipación y reflexión crítica." },
+                { text: "Limitarse a transmitir información de manera frontal y pasiva.", correct: false, msg: "Incorrecto. Eso responde a enfoques tradicionales." },
+                { text: "Sancionar severamente el error del estudiante.", correct: false, msg: "Incorrecto. El error se concibe como motor del aprendizaje." }
+            ]},
+            { q: "5. ¿A qué se refiere el concepto de 'noosfera' en la transposición didáctica?", options: [
+                { text: "A la esfera donde interactúan los expertos definiendo qué saberes deben ser enseñables.", correct: true, msg: "¡Correcto! Es el espacio donde la sociedad piensa el saber a enseñar." },
+                { text: "Al servidor en la nube de almacenamiento educativo.", correct: false, msg: "Incorrecto. Es una categoría conceptual de Chevallard." },
+                { text: "Al cerebro colectivo de los alumnos en clase.", correct: false, msg: "Incorrecto. Pertenece al campo epistemológico didáctico." }
+            ]},
+            { q: "6. Cuando hablamos de la 'vigencia del saber' en la transposición, nos referimos a que:", options: [
+                { text: "El saber enseñado debe mantener sintonía con el desarrollo del conocimiento de referencia.", correct: true, msg: "¡Exacto! Evita enseñar saberes totalmente desactualizados." },
+                { text: "Los libros de texto no deben modificarse jamás.", correct: false, msg: "Incorrecto. Los saberes y textos se actualizan." },
+                { text: "Los contenidos escolares no tienen relación con la realidad.", correct: false, msg: "Incorrecto. Deben vincularse con el entorno." }
+            ]},
+            { q: "7. ¿Cuál es el rol central del docente frente al diseño curricular oficial?", options: [
+                { text: "Un agente activo de recontextualización y recreación según su grupo y contexto.", correct: true, msg: "¡Correcto! El docente recrea y adapta la propuesta curricular." },
+                { text: "Un mero ejecutor técnico que aplica instrucciones sin pensar.", correct: false, msg: "Incorrecto. El docente es un profesional reflexivo." },
+                { text: "Un diseñador de leyes nacionales del ministerio.", correct: false, msg: "Incorrecto. Las leyes se elaboran a nivel macro estatal." }
+            ]},
+            { q: "8. El concepto de 'triángulo didáctico' involucra la relación dinámica entre:", options: [
+                { text: "Docente, alumno y saber (mediados por el contexto institucional).", correct: true, msg: "¡Excelente! Son los vértices clásicos de la relación pedagógica." },
+                { text: "Director, docente y cooperadora escolar.", correct: false, msg: "Incorrecto. Eso corresponde a la gestión administrativa." },
+                { text: "Tecnología, conectividad y plataforma virtual.", correct: false, msg: "Incorrecto. La tecnología media, pero los actores son otros." }
+            ]},
+            { q: "9. ¿Qué se entiende por 'transposición didáctica externa'?", options: [
+                { text: "El paso del saber científico al saber a enseñar en los textos oficiales y diseños curriculares.", correct: true, msg: "¡Correcto! Ocurre fuera del aula, en la esfera macro." },
+                { text: "La tarea que hace el alumno en su casa.", correct: false, msg: "Incorrecto. Eso es tarea domiciliaria." },
+                { text: "La evaluación que toman inspectores externos.", correct: false, msg: "Incorrecto. No se refiere a fiscalización." }
+            ]},
+            { q: "10. ¿Qué implica la 'transposición didáctica interna'?", options: [
+                { text: "La transformación que realiza el docente al planificar y llevar el saber al aula con sus alumnos.", correct: true, msg: "¡Muy bien! Ocurre dentro del vínculo pedagógico cotidiano." },
+                { text: "La revisión interna que hace una escuela de sus notas.", correct: false, msg: "Incorrecto. Es un concepto teórico didáctico." },
+                { text: "El proceso mental inconsciente del estudiante.", correct: false, msg: "Incorrecto. Alude a la transposición del docente." }
+            ]},
+            { q: "11. En relación con el currículum nulo, podemos afirmar que se trata de:", options: [
+                { text: "Aquellos contenidos o temas que la escuela omite deliberada o inadvertidamente.", correct: true, msg: "¡Exacto! Lo que no se enseña también comunica posicionamientos." },
+                { text: "Las materias que se suspenden por feriados nacionales.", correct: false, msg: "Incorrecto. No tiene que ver con el calendario." },
+                { text: "Los exámenes desaprobados por todo el grupo.", correct: false, msg: "Incorrecto. Es una categoría de análisis curricular." }
+            ]},
+            { q: "12. ¿A qué se denomina 'pacto pedagógico' en el aula?", options: [
+                { text: "Al acuerdo implícito y explícito de normas y compromisos entre docente y estudiantes.", correct: true, msg: "¡Correcto! Regula el vínculo de enseñanza y convivencia." },
+                { text: "A la firma de contratos laborales con el sindicato.", correct: false, msg: "Incorrecto. Pertenece al ámbito gremial." },
+                { text: "Al acuerdo de notas entre directivos y padres.", correct: false, msg: "Incorrecto. Es un vínculo didáctico." }
+            ]},
+            { q: "13. ¿Cuál es el riesgo de caer en el enciclopedismo didáctico?", options: [
+                { text: "Acumular gran cantidad de información fragmentada sin lograr comprensión crítica.", correct: true, msg: "¡Muy bien! Privilegia la acumulación por sobre la comprensión." },
+                { text: "Utilizar demasiadas computadoras en el aula.", correct: false, msg: "Incorrecto. No está ligado a la tecnología." },
+                { text: "Reducir el año escolar a la mitad del tiempo.", correct: false, msg: "Incorrecto. Es un problema de enfoque de contenidos." }
+            ]},
+            { q: "14. ¿Qué rol cumple la intencionalidad en la planificación de la enseñanza?", options: [
+                { text: "Define el sentido político-pedagógico de las decisiones para orientar los aprendizajes.", correct: true, msg: "¡Correcto! Enseñar es un acto político e intencional." },
+                { text: "Garantizar que el aula mantenga silencio absoluto.", correct: false, msg: "Incorrecto. El propósito educativo va más allá del control." },
+                { text: "Cumplir con un requisito burocrático sin importar los alumnos.", correct: false, msg: "Incorrecto. La planificación tiene sentido activo." }
+            ]},
+            { q: "15. La mediación instrumental en la enseñanza alude a:", options: [
+                { text: "El uso de recursos y lenguajes que median entre el sujeto y el objeto de conocimiento.", correct: true, msg: "¡Excelente! Los instrumentos expanden las capacidades cognitivas." },
+                { text: "La compra obligatoria de instrumentos musicales.", correct: false, msg: "Incorrecto. Es un concepto vigotskiano aplicado." },
+                { text: "La penalización de conductas en el recreo.", correct: false, msg: "Incorrecto. Nada tiene que ver con sanciones." }
+            ]}
+        ];
+
+        const userAnswers = {};
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function initQuiz(containerId) {
+            userAnswers[containerId] = {};
+            const container = document.getElementById(containerId);
+            const wrapper = container.querySelector('.quiz-questions-wrapper');
+            const scoreBox = document.getElementById('score-box-eje1');
+            wrapper.innerHTML = '';
+            scoreBox.innerHTML = '';
+            scoreBox.className = 'quiz-score-box';
+
+            let pool = JSON.parse(JSON.stringify(quizData1));
+            shuffleArray(pool);
+
+            pool.forEach((item, index) => {
+                const qNum = index + 1;
+                shuffleArray(item.options);
+                let opts = '';
+                item.options.forEach(opt => {
+                    opts += `<button class="quiz-btn" onclick="checkAnswer(this, '${containerId}', ${qNum}, ${opt.correct}, '${opt.msg.replace(/'/g, "\\'")}')">${opt.text}</button>`;
+                });
+                wrapper.innerHTML += `<div class="quiz-item"><div class="quiz-question">${qNum}. ${item.q.replace(/^\d+\.\s*/, '')}</div><div class="quiz-options">${opts}</div><div class="quiz-feedback"></div></div>`;
+            });
+        }
+
+        function checkAnswer(btn, containerId, qid, isCorrect, msg) {
+            const item = btn.closest('.quiz-item');
+            const buttons = item.querySelectorAll('.quiz-btn');
+            const feedback = item.querySelector('.quiz-feedback');
+            userAnswers[containerId][qid] = isCorrect;
+
+            buttons.forEach(b => { b.style.pointerEvents = 'none'; if(b === btn) b.style.fontWeight = 'bold'; });
+            feedback.textContent = msg;
+            feedback.className = isCorrect ? 'quiz-feedback correct' : 'quiz-feedback incorrect';
+
+            const total = parseInt(document.getElementById(containerId).getAttribute('data-total'));
+            if (Object.keys(userAnswers[containerId]).length === total) {
+                let score = Object.values(userAnswers[containerId]).filter(v => v === true).length;
+                const scoreBox = document.getElementById('score-box-eje1');
+                if (score >= 7) {
+                    scoreBox.innerHTML = `🎉 ¡Felicitaciones, Cari! Obtuviste ${score} de ${total} aciertos. ¡Excelente desempeño y valoración de tus logros! 🌟`;
+                    scoreBox.className = 'quiz-score-box success';
+                } else {
+                    scoreBox.innerHTML = `💪 ¡Buen intento! Obtuviste ${score} de ${total} aciertos. ¡A no aflojar! Repasá las lecturas obligatorias y volvé a intentarlo. 🚀`;
+                    scoreBox.className = 'quiz-score-box encouragement';
+                }
+            }
+        }
+        window.onload = () => initQuiz('quiz-eje1');
+    </script>
+</body>
+</html>

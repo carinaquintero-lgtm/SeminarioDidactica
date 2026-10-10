@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulador · Semana 1 · Seminario de Didáctica</title>
+<style>
+:root{
+  --tinta:#33484A; --tinta-suave:#5b7173; --arena:#F5FBFA; --papel:#ffffff;
+  --agua:#7CC2B9; --agua-p:#4C948B; --salvia:#93C9B5; --salvia-p:#5FA089;
+  --rosa:#E6A0AC; --rosa-p:#C97686; --coral:#EFA98D; --coral-p:#D3805F;
+  --borde:#cfe3df; --r:18px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--arena);color:var(--tinta);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.25;margin:0 0 .4em}
+h1{font-size:1.7rem} h2{font-size:1.3rem} h3{font-size:1.1rem}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px 48px}
+header{padding:24px 0 8px}
+.eyebrow{font:600 .72rem/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--agua-p)}
+.lead{color:var(--tinta-suave);max-width:70ch;margin:.3em 0 0}
+nav[role=tablist]{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+nav button{font:inherit;border:1.5px solid var(--borde);background:var(--papel);color:var(--tinta);padding:10px 16px;border-radius:999px;cursor:pointer}
+nav button[disabled]{opacity:.5;cursor:not-allowed}
+nav button[aria-selected=true]{background:var(--tinta);color:#fff;border-color:var(--tinta)}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--coral-p);outline-offset:2px}
+.card{background:var(--papel);border:1.5px solid var(--borde);border-radius:var(--r);padding:18px}
+.small{font-size:.88rem;color:var(--tinta-suave)}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.col h3{display:flex;gap:8px;align-items:baseline}
+.col .num{font:700 .8rem ui-monospace,Menlo,monospace;background:var(--tinta);color:#fff;border-radius:8px;padding:2px 8px}
+.col[data-sec="1"] .nodo{border-left:6px solid var(--agua-p)}
+.col[data-sec="2"] .nodo{border-left:6px solid var(--salvia-p)}
+.col[data-sec="3"] .nodo{border-left:6px solid var(--rosa-p)}
+.nodo{display:block;width:100%;text-align:left;font:inherit;background:var(--papel);color:var(--tinta);border:1.5px solid var(--borde);border-radius:14px;padding:10px 12px;margin:8px 0;cursor:pointer}
+.nodo b{display:block;font-family:Georgia,serif}
+.nodo span{display:block;font-size:.85rem;color:var(--tinta-suave)}
+.nodo[aria-pressed=true]{background:var(--tinta);color:#fff;border-color:var(--tinta)}
+.nodo[aria-pressed=true] span{color:#d9ecea}
+.nodo.visto::after{content:"● explorado";display:block;font-size:.72rem;color:var(--agua-p);margin-top:2px}
+.nodo[aria-pressed=true].visto::after{color:#bfe6df}
+#detalle{margin-top:16px;min-height:140px}
+blockquote{margin:12px 0;padding:10px 14px;border-left:4px solid var(--coral);background:#fff6f1;border-radius:0 12px 12px 0}
+blockquote cite{display:block;font-style:normal;font-size:.85rem;color:var(--tinta-suave);margin-top:4px}
+.para-pensar{background:var(--arena);border:1.5px dashed var(--agua-p);border-radius:14px;padding:10px 14px;margin:12px 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{font:inherit;font-size:.85rem;border:1.5px solid var(--borde);background:var(--papel);color:var(--tinta);border-radius:999px;padding:4px 12px;cursor:pointer}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.btn{font:inherit;border:1.5px solid var(--tinta);background:var(--tinta);color:#fff;border-radius:12px;padding:9px 16px;cursor:pointer}
+.btn.sec{background:var(--papel);color:var(--tinta)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.escena-texto{background:#fff6f1;border:1.5px solid #f3d3c4;border-radius:14px;padding:14px;margin:10px 0}
+.obs{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1.5px solid var(--borde);border-radius:12px;margin:6px 0;background:var(--papel);cursor:pointer}
+.obs input{margin-top:5px;width:18px;height:18px;accent-color:var(--agua-p)}
+.obs:has(input:checked){border-color:var(--agua-p);background:#eef8f6}
+.tiempo{border-top:1.5px solid var(--borde);margin-top:14px;padding-top:12px}
+.tiempo h3{font-size:1rem}
+.lente{margin:8px 0;padding:8px 12px;border-radius:12px;background:var(--arena);border:1px solid var(--borde)}
+.lente b{font-family:Georgia,serif}
+.opt{display:block;width:100%;text-align:left;font:inherit;background:var(--papel);color:var(--tinta);border:1.5px solid var(--borde);border-radius:12px;padding:10px 14px;margin:8px 0;cursor:pointer}
+.opt[aria-pressed=true]{border-color:var(--tinta);background:#eef8f6}
+.opt[disabled]{cursor:default}
+.prog{height:8px;background:var(--borde);border-radius:99px;overflow:hidden;margin:8px 0}
+.prog i{display:block;height:100%;background:var(--agua-p);width:0}
+textarea{width:100%;min-height:110px;font:inherit;color:var(--tinta);border:1.5px solid var(--borde);border-radius:12px;padding:10px 12px;background:#fff;resize:vertical}
+label.campo{display:block;font-weight:600;margin:14px 0 4px}
+.caso p{margin:.6em 0}
+.consigna{background:#eef8f6;border:1.5px solid var(--agua);border-radius:14px;padding:12px 14px;margin:12px 0}
+footer{margin-top:28px}
+[hidden]{display:none!important}
+@media (max-width:820px){.cols{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:no-preference){.prog i{transition:width .3s}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Seminario de Didáctica · Semana 1</div>
+  <h1>Enseñanza, conocimiento y sujeto: un recorrido para explorar</h1>
+  <p class="lead">Un recorrido en cuatro momentos: un caso para analizar por escrito, un mapa para volver sobre las ideas de la Semana 1, escenas breves para mirar con distintos lentes y preguntas para volver a las lecturas. No hay puntaje ni respuestas únicas; cada devolución deja preguntas abiertas y remite a la fuente.</p>
+</header>
+
+<nav role="tablist" aria-label="Recorrido del simulador">
+  <button role="tab" id="t-caso" aria-selected="true" aria-controls="p-caso">1 · Caso para analizar</button>
+  <button role="tab" id="t-mapa" aria-selected="false" aria-controls="p-mapa" class="bloq" disabled>2 · Mapa de lectura</button>
+  <button role="tab" id="t-escenas" aria-selected="false" aria-controls="p-escenas" class="bloq" disabled>3 · Escenas breves</button>
+  <button role="tab" id="t-preguntas" aria-selected="false" aria-controls="p-preguntas" class="bloq" disabled>4 · Preguntas para volver a los textos</button>
+</nav>
+<p class="small" id="aviso-bloq">El recorrido empieza por el caso. Después de ensayar una respuesta y ver la devolución, se habilitan el mapa, las escenas y las preguntas.
+  <button class="chip" id="docente-hab" type="button">Habilitar todo (docente)</button></p>
+
+<main>
+<!-- CASO -->
+<section id="p-caso" role="tabpanel" aria-labelledby="t-caso">
+  <div class="card caso">
+    <div class="eyebrow">Caso para analizar</div>
+    <h2>«Profe, ¿podemos usar fuentes online en el parcial?»</h2>
+    <div id="caso-texto"></div>
+    <div class="consigna">
+      <b>Consigna.</b> El foco está en la enseñanza como práctica situada: la relación docente-estudiantes-saber en un contexto institucional y digital concreto. No se busca resolver qué debería haber hecho Mariano ni ofrecer alternativas: interesa identificar qué lógicas distintas conviven en la escena y qué queda en disputa entre ellas. Pueden apoyar cada afirmación con una cita breve del caso.
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h2>Ensayen una respuesta</h2>
+    <p class="small">Pueden probar una primera lectura, aunque sea provisoria: el recorrido que sigue permite volver sobre ella. Escriban con sus palabras. Lo que tipeen se queda en esta página y no se envía a ningún lado. La devolución se arma con criterios del desarrollo de la Semana 1: orienta con preguntas y no califica.</p>
+    <label class="campo" for="c-1">1 · Situación y condiciones de posibilidad</label>
+    <p class="small" id="h-1">¿Qué condiciones institucionales, curriculares o evaluativas aparecen en la escena? ¿Qué mediaciones digitales entran en juego y cómo reordenan lo que pasa en la clase?</p>
+    <textarea id="c-1" aria-describedby="h-1"></textarea>
+    <label class="campo" for="c-2">2 · Relación didáctica en movimiento</label>
+    <p class="small" id="h-2">¿Qué lugar queda construido, en esta escena, para el docente, para los estudiantes y para el saber? ¿Qué cambia entre el antes, el durante y el después?</p>
+    <textarea id="c-2" aria-describedby="h-2"></textarea>
+    <label class="campo" for="c-3">3 · Punto en disputa</label>
+    <p class="small" id="h-3">Pueden probar la fórmula: «En la escena aparece un punto en disputa entre ___ y ___» (dos lógicas o criterios, no dos personas). Luego, 1 o 2 preguntas que ese punto deja abiertas.</p>
+    <textarea id="c-3" aria-describedby="h-3"></textarea>
+    <p class="small" id="c-cuenta" aria-live="polite"></p>
+    <div class="row">
+      <button class="btn" id="c-ver">Ver devolución</button>
+      <button class="btn sec" id="c-copiar">Copiar respuesta y devolución</button>
+      <button class="btn sec" id="c-reset">Borrar y empezar de nuevo</button>
+    </div>
+    <p class="small" id="c-msg" aria-live="polite"></p>
+    <div id="c-dev" aria-live="polite"></div>
+    <div class="row" id="c-sig" hidden><button class="btn" id="c-ir-mapa" type="button">Continuar con el mapa de lectura</button></div>
+  </div>
+</section>
+
+<!-- MAPA -->
+<section id="p-mapa" role="tabpanel" aria-labelledby="t-mapa" hidden>
+  <p class="small">Después de ensayar una lectura del caso, pueden volver sobre ella con estos nodos: ¿cuáles dialogan con lo que escribieron? Pueden recorrerlos en cualquier orden. Cada uno ofrece la idea del desarrollo, una cita con su fuente y una pregunta para conversar.</p>
+  <div class="prog" aria-hidden="true"><i id="prog-mapa"></i></div>
+  <p class="small" id="prog-mapa-txt" aria-live="polite"></p>
+  <div class="cols" id="cols"></div>
+  <div class="card" id="detalle" aria-live="polite">
+    <p class="small">Elijan un nodo para ver su detalle.</p>
+  </div>
+  <div class="row"><button class="btn" type="button" data-ir="t-escenas">Continuar con las escenas breves</button></div>
+</section>
+
+<!-- ESCENAS -->
+<section id="p-escenas" role="tabpanel" aria-labelledby="t-escenas" hidden>
+  <div class="row" id="escena-sel" role="group" aria-label="Elegir escena"></div>
+  <div class="card" style="margin-top:12px">
+    <h2 id="e-titulo"></h2>
+    <div class="escena-texto" id="e-texto"></div>
+    <p><b>¿Qué miraríamos de esta escena?</b> <span class="small">Pueden marcar todas las observaciones que les resulten pertinentes.</span></p>
+    <div id="e-obs"></div>
+    <div class="row">
+      <button class="btn" id="e-ver">Ver devolución</button>
+      <button class="btn sec" id="e-reset">Volver a empezar</button>
+    </div>
+    <div id="e-dev" aria-live="polite"></div>
+  </div>
+  <p class="small">Las escenas son ficticias y se construyeron a partir de los ejemplos del desarrollo de la Semana 1.</p>
+  <div class="row"><button class="btn" type="button" data-ir="t-preguntas">Continuar con las preguntas para volver a los textos</button></div>
+</section>
+
+<!-- PREGUNTAS -->
+<section id="p-preguntas" role="tabpanel" aria-labelledby="t-preguntas" hidden>
+  <div class="card">
+    <div class="prog" aria-hidden="true"><i id="prog-q"></i></div>
+    <p class="small" id="q-estado" aria-live="polite"></p>
+    <h2 id="q-enun"></h2>
+    <div id="q-opts"></div>
+    <div id="q-dev" aria-live="polite"></div>
+    <div class="row">
+      <button class="btn sec" id="q-ant">Anterior</button>
+      <button class="btn" id="q-sig">Siguiente</button>
+      <button class="btn sec" id="q-reset">Reiniciar</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="card small">
+  <b>Sobre las fuentes.</b> El contenido sigue el desarrollo de la Semana 1 del Seminario de Didáctica. Los fragmentos de Steiman (2023, cap. 1), Becker Soares (1985), Anijovich y Cappelletti (2021, cap. 1), Edelstein (2022) y Bárcena y Mèlich (2000) se contrastaron con los textos de la carpeta de lecturas; las páginas de Brailovsky, De Alba, Edelstein y Bárcena y Mèlich se toman tal como figuran en el desarrollo. Es un apoyo para estudiar y conversar; no califica.
+</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- utilidades ---------- */
+function el(tag, props, kids){
+  var n=document.createElement(tag);
+  if(props){ for(var k in props){
+    if(k==="text") n.textContent=props[k];
+    else if(k==="class") n.className=props[k];
+    else n.setAttribute(k,props[k]);
+  }}
+  (kids||[]).forEach(function(c){ if(c) n.appendChild(typeof c==="string"?document.createTextNode(c):c); });
+  return n;
+}
+function clear(n){ while(n.firstChild) n.removeChild(n.firstChild); }
+function $(id){ return document.getElementById(id); }
+
+/* ---------- pestañas ---------- */
+var tabs=[["t-caso","p-caso"],["t-mapa","p-mapa"],["t-escenas","p-escenas"],["t-preguntas","p-preguntas"]];
+function showTab(id){
+  tabs.forEach(function(t){
+    var sel=t[0]===id;
+    $(t[0]).setAttribute("aria-selected",sel?"true":"false");
+    $(t[1]).hidden=!sel;
+  });
+  window.scrollTo(0,0);
+}
+function habilitar(){
+  ["t-mapa","t-escenas","t-preguntas"].forEach(function(id){ $(id).disabled=false; $(id).classList.remove("bloq"); });
+  $("aviso-bloq").hidden=true;
+  $("c-sig").hidden=false;
+}
+tabs.forEach(function(t){ $(t[0]).addEventListener("click",function(){ if(!$(t[0]).disabled) showTab(t[0]); }); });
+$("docente-hab").addEventListener("click",habilitar);
+[].forEach.call(document.querySelectorAll("[data-ir]"),function(b){ b.addEventListener("click",function(){ showTab(b.getAttribute("data-ir")); }); });
+
+/* ---------- 1 · MAPA ---------- */
+var SECCIONES={
+  1:"Coordenadas y supuestos",
+  2:"La práctica como objeto de análisis",
+  3:"Problematización y modelos"
+};
+var NODOS=[
+ {id:"n1",sec:1,t:"Pedagogía",s:"un quehacer que pregunta",
+  idea:"En el desarrollo, la pedagogía se entiende como un modo de producir preguntas, leer la experiencia escolar y desnaturalizar lo que parece obvio.",
+  cita:"la Pedagogía asume este esfuerzo de pensamiento y análisis, como su tarea principal",ref:"Brailovsky (2018, p. 8)",
+  p:"¿Qué pregunta por el sentido de lo que hacen aparece cuando enseñan algo que ya les parece obvio?",con:["n2","n3"]},
+ {id:"n2",sec:1,t:"Didáctica",s:"el hacer en situación",
+  idea:"Mira las decisiones de enseñanza en situación: con qué lógicas se toman, qué supuestos las sostienen y qué efectos producen. Combina niveles teórico, técnico e instrumental, y considera el tiempo, el espacio y los agrupamientos.",
+  cita:"La didáctica implica una combinación de los niveles teórico, técnico, instrumental en el análisis y elaboración de los problemas de su ámbito; lo que supone una interrelación permanente entre la indagación teórica y la práctica educativa",ref:"Edelstein y Rodríguez (1974, p. 21), citadas en Steiman (2023)",
+  p:"Cuando diseñan una clase, ¿qué decisiones sobre tiempo, espacio y agrupamientos suelen quedar sin nombrar?",con:["n1","n3","n5"]},
+ {id:"n3",sec:1,t:"Fundamentos",s:"el suelo que no se nombra",
+  idea:"Los fundamentos antropológicos, epistemológicos y éticos funcionan como un suelo que organiza la mirada aunque pocas veces se explicite: qué idea de sujeto, qué concepción de conocimiento, qué noción de justicia educativa.",
+  cita:null,ref:"Desarrollo de la Semana 1, apartado 1.1",
+  p:"Frente a una secuencia que consideran «incoherente», ¿qué estarían señalando: sentidos formativos, estrategias o supuestos sobre el conocimiento?",con:["n2","n7","n8","n9"]},
+ {id:"n4",sec:1,t:"Campo ecléctico",s:"fronteras difusas",
+  idea:"Steiman describe un campo ecléctico. El desarrollo propone pensar esa falta de fronteras nítidas como signo de la complejidad de la enseñanza, que habilita interpelaciones profundas y situadas.",
+  cita:"lo que pertenece al campo de la Didáctica y lo que no pertenece no está tan claramente delimitado",ref:"Steiman (2023, p. 20)",
+  p:"¿Qué cambia en la lectura de una clase si las fronteras del campo se consideran un rasgo de su complejidad?",con:["n2","n5"]},
+ {id:"n5",sec:1,t:"Mandato prescriptivo",s:"¿con qué herramienta se regula?",
+  idea:"Escuela tradicional, activa y tecnicismo cambian el lema y comparten una lógica normativa sobre qué sería una buena clase.",
+  cita:"el «problema didáctico» por excelencia es: ¿con qué herramienta se regula la práctica?",ref:"Steiman (2023, p. 17)",
+  p:"¿Qué lema sobre «una buena clase» recuerdan de su propia formación y cuál aparece hoy en su práctica?",con:["n4","n6"]},
+ {id:"n6",sec:1,t:"Interpretativo-crítico",s:"situación sociopolítica concreta",
+  idea:"El desplazamiento coloca la incertidumbre como rasgo de la enseñanza: decisiones situadas, fundamentadas y revisables, en lugar de garantías del tipo «si hago X, obtengo Y».",
+  cita:"la Didáctica no opera a nivel de laboratorio: trascurre en un enmarque de una situación sociopolítica concreta, en función o disfunción de la cual actúa",ref:"Barco (1975, p. 38), citada en Steiman (2023)",
+  p:"¿Qué incomodidad aparece cuando se desalojan las certezas y qué permite pensar esa incomodidad?",con:["n5","n7"]},
+ {id:"n7",sec:1,t:"Supuestos antropológicos",s:"¿qué sujeto se imagina?",
+  idea:"Toda decisión didáctica porta una idea de sujeto que aprende. Se traduce en la distribución de la palabra, el tipo de tareas y la relación con el error.",
+  cita:"concibe al/la docente como agente curricular significativo; un/una docente que conoce, que tiene un saber y se define respecto del qué, cómo, porqué y para qué enseña",ref:"Edelstein (2022, p. 68), según el desarrollo",
+  p:"En su última clase, ¿quién habló, quién preguntó, quién «sabía»?",con:["n8","n9"]},
+ {id:"n8",sec:1,t:"Supuestos epistemológicos",s:"¿qué cuenta como saber?",
+  idea:"Qué contenidos, fuentes y modos de validar se priorizan, y qué saberes quedan afuera. Incluye las lógicas de búsqueda y procesamiento de información en entornos digitales.",
+  cita:"síntesis de elementos culturales (conocimientos, valores, costumbres, creencias, hábitos)",ref:"De Alba (1998, p. 59)",
+  p:"¿Qué saberes circulan en sus aulas en condiciones de igualdad y cuáles quedan como «menores»?",con:["n7","n9"]},
+ {id:"n9",sec:1,t:"Supuestos éticos",s:"hospitalidad y alteridad",
+  idea:"Qué hacemos con el otro cuando llega: qué lugar le damos, qué mundo le ofrecemos. La responsabilidad aparece como respuesta: hacerse cargo de las condiciones del encuentro.",
+  cita:"acogimiento hospitalario de los recién llegados",ref:"Bárcena y Mèlich (2000, p. 14)",
+  p:"¿Qué condiciones de acogida construyen para que alguien pueda entrar al trabajo con el saber sin ser expulsado?",con:["n7","n8"]},
+
+ {id:"n10",sec:2,t:"Documentar",s:"hacer visible lo invisible",
+  idea:"Documentar construye un registro que hace visibles decisiones, supuestos y efectos; captura tensiones y no solo logros, y abre preguntas.",
+  cita:"colocar como objeto de estudio las propias prácticas de enseñanza",ref:"Edelstein (2022, p. 59)",
+  p:"¿Qué quedaría visible de su última clase en un registro y qué se evaporaría?",con:["n11","n13"]},
+ {id:"n11",sec:2,t:"Tres movimientos",s:"distanciar, extrañar, conceptualizar",
+  idea:"Distanciamiento (mirar la práctica desde afuera), extrañamiento (volver problemático el «así se hace») y análisis conceptual (leerla con categorías del campo didáctico).",
+  cita:"que lo familiar se vuelva extraño",ref:"Edelstein (2022)",
+  p:"¿Qué práctica propia aparece como «natural» y podría volverse extraña?",con:["n10","n12"]},
+ {id:"n12",sec:2,t:"Enseñanza y aprendizaje",s:"sin garantía automática",
+  idea:"Becker Soares cuestiona el binomio «enseñanza-aprendizaje». El aprendizaje importa como referente y contraste para revisar la enseñanza, sin ser consecuencia asegurada.",
+  cita:"hace suponer que de la enseñanza necesariamente resulta aprendizaje, lo que no es verdad",ref:"Becker Soares (1985, p. 3)",
+  p:"Al releer una clase, ¿qué lugar le dan al aprendizaje: referente, promesa, otra cosa?",con:["n10","n13"]},
+ {id:"n13",sec:2,t:"Polifonía de voces",s:"palabras, silencios, materiales",
+  idea:"La práctica se reconstruye con palabras, gestos y silencios, materiales, tiempos y ritmos, y producciones de estudiantes. Para eso se mencionan dispositivos: un mapa de decisiones, protocolos de observación, bitácoras, evidencias de producciones.",
+  cita:"una polifonía de voces",ref:"Edelstein (2022, p. 59)",
+  p:"¿Qué voz falta en el relato de su práctica?",con:["n10","n14"]},
+ {id:"n14",sec:2,t:"Ética del análisis",s:"sin tribunal",
+  idea:"Edelstein señala condiciones: romper la soledad y el aislamiento, construir un clima de credibilidad y confianza. Anijovich y Cappelletti suman la suspensión del juicio y una lógica recursiva, espiralada.",
+  cita:"no juzga, no lleva ante un tribunal, el tribunal de la razón",ref:"Edelstein (2022, p. 66)",
+  p:"¿Qué condiciones necesitarían para contar una clase sin un relato autocomplaciente ni una autoexigencia que aplaste?",con:["n13","n15"]},
+ {id:"n15",sec:2,t:"Niveles de reflexión",s:"de describir a deliberar",
+  idea:"Anijovich distingue descripción no reflexiva, reflexión descriptiva, discurso deliberativo, reflexión dialógica y reflexión crítica. Es una entrada para mirar la profundidad de los registros.",
+  cita:"da cuenta de las razones en la toma de decisiones, considerando el contexto histórico, social y político",ref:"Anijovich (2006), en Anijovich y Cappelletti (2021, cap. 1)",
+  p:"¿En qué nivel suelen quedar sus registros y qué conversaciones podrían ampliarlo?",con:["n14","n16"]},
+ {id:"n16",sec:2,t:"Macro, meso y micro",s:"la práctica excede el aula",
+  idea:"A escala macro, el contexto histórico-social; a escala meso, el tipo de organización institucional; a escala micro, el aula, con expectativas, representaciones mutuas y procesos interactivos.",
+  cita:"las resoluciones más sencillas de supervivencia en la función se asocien con frecuencia a la falta de problematización",ref:"Edelstein (2022, p. 49)",
+  p:"¿Qué condicionantes de escala macro o meso aparecen en lo que viven como «problema del aula»?",con:["n12","n17"]},
+
+ {id:"n17",sec:3,t:"Problematizar",s:"dejar de dar por sentado",
+  idea:"Una práctica se vuelve pensable cuando se mira qué la organiza. Aparecen tensiones y contradicciones que desplazan el trabajo en torno al conocimiento.",
+  cita:"corrimiento/desplazamiento de aquello que es tarea central en la enseñanza: el trabajo en torno al conocimiento",ref:"Edelstein (2022, p. 48)",
+  p:"¿Qué se corre del centro en sus clases y qué ocupa ese lugar?",con:["n16","n18"]},
+ {id:"n18",sec:3,t:"Declarado y operado",s:"lo que digo y lo que hago",
+  idea:"Nivel declarativo: lo que digo que creo. Nivel operativo: lo que concreto en tareas, tiempos, palabra, evidencias y evaluación. Las grietas suelen mostrar algo estructural: conviven modelos, tradiciones y mandatos institucionales.",
+  cita:"Decimos que el error es parte del proceso, pero lo tratamos como falta y lo penalizamos con puntaje",ref:"Desarrollo de la Semana 1, apartado 3.1",
+  p:"¿Qué distancia reconocen entre lo que dicen valorar y lo que pide su evaluación?",con:["n17","n19"]},
+ {id:"n19",sec:3,t:"Modelos en disputa",s:"herencias y mandatos",
+  idea:"El desarrollo describe cuatro lógicas: expositiva, participación dentro del guion, cumplimiento curricular y crítico-interpretativa. Ninguna aparece pura: se mezclan y se contradicen.",
+  cita:"la Didáctica prescribe, sólo que cambia el formato",ref:"Steiman (2023, p. 16)",
+  p:"¿Qué lógica manda en una decisión reciente, qué deja ver, qué deja afuera, qué corre del centro?",con:["n18","n20"]},
+ {id:"n20",sec:3,t:"Teorías implícitas",s:"esquemas prácticos",
+  idea:"Son ideas sobre enseñar y aprender que estructuran decisiones aunque no se hayan formulado. Orientan qué se ve como problema, qué soluciones parecen posibles, cómo se interpretan las respuestas y qué aprendizajes se legitiman.",
+  cita:"entran en juego como terceros que facilitan el pensar y no como verdad teórica a aplicar",ref:"Souto (2016, p. 77), en Anijovich y Cappelletti (2021)",
+  p:"Si cambian una clase magistral por un video, ¿qué lógica cambió y cuál sigue mandando?",con:["n19","n21"]},
+ {id:"n21",sec:3,t:"Hacia la Semana 2",s:"construir coherencias posibles",
+  idea:"Las tensiones documentadas en la Semana 1 quedan como insumo para rediseñar desde marcos explícitos. Steiman propone un paradigma que parte de la interpretación, sin abandonar la criticidad, y construye orientaciones para la acción.",
+  cita:"Creo que es necesario que la Didáctica proponga, no que norme y regule, pero sí que proponga",ref:"Steiman (2023, p. 25)",
+  p:"¿Qué tensión de su práctica les gustaría llevar como material a la próxima semana?",con:["n20"]}
+];
+var porId={}; NODOS.forEach(function(n){ porId[n.id]=n; });
+var visto={}; var actual=null;
+
+function renderCols(){
+  var cols=$("cols"); clear(cols);
+  [1,2,3].forEach(function(sec){
+    var c=el("div",{"class":"col card","data-sec":String(sec)});
+    c.appendChild(el("h3",null,[el("span",{"class":"num",text:String(sec)}),SECCIONES[sec]]));
+    NODOS.filter(function(n){return n.sec===sec;}).forEach(function(n){
+      var b=el("button",{"class":"nodo"+(visto[n.id]?" visto":""),"aria-pressed":actual===n.id?"true":"false","data-id":n.id},[
+        el("b",{text:n.t}), el("span",{text:n.s})]);
+      b.addEventListener("click",function(){ abrir(n.id); });
+      c.appendChild(b);
+    });
+    cols.appendChild(c);
+  });
+}
+function progMapa(){
+  var k=Object.keys(visto).length, t=NODOS.length;
+  $("prog-mapa").style.width=(100*k/t)+"%";
+  $("prog-mapa-txt").textContent="Nodos explorados: "+k+" de "+t;
+}
+function abrir(id){
+  actual=id; visto[id]=true;
+  var n=porId[id], d=$("detalle"); clear(d);
+  d.appendChild(el("div",{"class":"eyebrow",text:"Sección "+n.sec+" · "+SECCIONES[n.sec]}));
+  d.appendChild(el("h2",{text:n.t}));
+  d.appendChild(el("p",{text:n.idea}));
+  if(n.cita){
+    d.appendChild(el("blockquote",null,[ "«"+n.cita+"»", el("cite",{text:n.ref}) ]));
+  } else {
+    d.appendChild(el("p",{"class":"small",text:"Fuente: "+n.ref}));
+  }
+  d.appendChild(el("div",{"class":"para-pensar"},[ el("b",{text:"Para conversar: "}), n.p ]));
+  d.appendChild(el("div",{"class":"small",text:"Se conecta con:"}));
+  var chips=el("div",{"class":"chips"});
+  n.con.forEach(function(cid){
+    var b=el("button",{"class":"chip",text:porId[cid].t});
+    b.addEventListener("click",function(){ abrir(cid); });
+    chips.appendChild(b);
+  });
+  d.appendChild(chips);
+  var i=NODOS.indexOf(n);
+  var row=el("div",{"class":"row"});
+  var prev=el("button",{"class":"btn sec",text:"Nodo anterior"});
+  var next=el("button",{"class":"btn",text:"Nodo siguiente"});
+  if(i===0) prev.disabled=true;
+  if(i===NODOS.length-1) next.disabled=true;
+  prev.addEventListener("click",function(){ abrir(NODOS[i-1].id); });
+  next.addEventListener("click",function(){ abrir(NODOS[i+1].id); });
+  row.appendChild(prev); row.appendChild(next); d.appendChild(row);
+  renderCols(); progMapa();
+}
+
+/* ---------- 2 · CASO MARIANO ---------- */
+var CASO=[
+"Mariano dicta Introducción a la Teoría Social en el 2.º año del ciclo básico de una carrera universitaria. El curso tiene unos 60 inscriptos, pero en el aula suelen participar entre 35 y 40. La cátedra usa un campus institucional para subir bibliografía, consignas y avisos. A la vez, hace tiempo que circula —sin que la cátedra lo administre— un entramado de grupos estudiantiles en apps de mensajería: allí se pasan resúmenes, enlaces, capturas de pantalla, audios con “explicaciones” y archivos armados en documentos compartidos.",
+"Mariano planifica una clase sobre “modernidad” y “racionalización” a partir de un texto canónico del programa. Su intención es trabajar con una lectura situada: qué problema intenta responder el autor, qué conceptos arma, qué discusión abre. Antes de empezar, proyecta un esquema y plantea dos preguntas para guiar el debate. Nota, como en otras clases, que una parte del grupo sigue la exposición con el celular en la mano. No es solo “mirar”: alternan entre pantalla y conversación, escriben, buscan, comparten.",
+"A los veinte minutos, cuando Mariano define un concepto clave, una estudiante levanta la mano: “En el grupo pasaron un hilo donde dicen otra cosa. Hay un video de diez minutos que lo explica distinto”. Otra agrega: “Acá encontré una definición más actual, de una página de divulgación”. Un tercero muestra una captura: “Miren, esto lo resume perfecto”. Empiezan a circular links por el aula: algunos los abren, otros piden que se los pasen, alguien comenta “yo no estoy en ese grupo”.",
+"Mariano intenta recuperar el eje: pregunta de dónde sale cada afirmación, qué tipo de fuente es, qué relación tiene con el texto del programa. La conversación se acelera. Aparecen frases como “pero en internet dice…”, “esto está desactualizado”, “la IA lo explica mejor”, “¿para qué leer 30 páginas si está todo acá?”. Mariano siente que el aula se le desordena en capas: una discusión oral, otra escrita en los celulares, otra que él no ve porque ocurre en grupos donde no está. Cuando pide que vuelvan al texto, alguien responde: “Profe, ¿por qué su lectura vale más que la del link?”",
+"En un momento, Mariano nota que no está discutiendo solo un contenido, sino también quién decide qué cuenta como saber en esa clase, cómo se justifica una afirmación y qué lugar ocupa el docente cuando los estudiantes llegan con información “lista para usar”. Piensa en la próxima evaluación: un parcial con preguntas de desarrollo. Le inquieta que el circuito paralelo de materiales produzca respuestas muy parecidas entre sí, o que reduzca el trabajo a “encontrar la frase correcta”. A la vez, percibe que para varios estudiantes esos grupos funcionan como sostén real: organizarse, traducir textos difíciles, no quedar afuera.",
+"La clase termina con la sensación de que quedó abierto un conflicto sin resolución clara. Mariano guarda sus notas y escribe en su cuaderno: “Hoy la discusión se me fue de las manos. ¿Qué hago con los links? ¿Cómo sostener lectura crítica sin quedar como policía del celular? ¿Qué estoy enseñando: teoría social, prácticas de estudio, criterios de verdad, o todo junto?”. En el campus institucional ya hay mensajes: “Profe, ¿cuál definición entra?” y “¿podemos usar fuentes online en el parcial?”."
+];
+CASO.forEach(function(t){ $("caso-texto").appendChild(el("p",{text:t})); });
+
+function norm(t){
+  return t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/\s+/g," ").trim();
+}
+/* Criterios: cada patrón es una expresión sobre el texto normalizado (sin tildes).
+   "minimo" = cuántos patrones distintos deben aparecer para considerar el criterio presente. */
+var CRIT=[
+ {c:"c1",id:"inst",t:"Condiciones institucionales, curriculares o evaluativas",
+  pat:["parcial","evaluacion|examen|calificacion","programa|curricul|plan de estudio","catedra","campus|institucion","bibliografia|texto canonico"],min:2,
+  ok:"Aparecen condiciones institucionales, curriculares o evaluativas.",
+  pista:"¿Qué condiciones institucionales, curriculares o evaluativas aparecen en la escena (el programa, el campus, el parcial) y cómo orientan lo que ocurre?",ref:"Edelstein (2022, p. 49): escala meso"},
+ {c:"c1",id:"digi",t:"Mediaciones digitales",
+  pat:["grupo|mensajeria|whatsapp","celular|pantalla","link|enlace|captura|video","\\bia\\b|inteligencia artificial","internet|digital|plataforma|campus"],min:2,
+  ok:"Se nombran mediaciones digitales (grupos, celulares, links, IA).",
+  pista:"¿Qué mediaciones digitales entran en juego y cómo reordenan la clase: quién habla, dónde ocurre la discusión, qué se ve y qué no se ve?",ref:"Dussel y Roldán (2023), según el desarrollo"},
+ {c:"c1",id:"cita",t:"Apoyo en citas del caso",
+  raw:true,pat:["[\"“«”»]"],min:1,
+  ok:"Aparecen citas o frases del caso como apoyo.",
+  pista:"¿Qué frase breve del caso sostendría cada enunciado de este primer punto?",ref:"Consigna del caso"},
+ {c:"c2",id:"tri",t:"Docente, estudiantes y saber",
+  pat:["docente|profe|mariano|autoridad","estudiante|alumn|grupo","saber|conocimiento|texto|fuente|lectura|contenido"],min:3,
+  ok:"Se miran los tres lugares: docente, estudiantes y saber.",
+  pista:"¿Qué lugar queda construido para el docente, para los estudiantes y para el saber? ¿Alguno de los tres quedó sin nombrar?",ref:"Edelstein y Rodríguez (1974), citadas en Steiman (2023)"},
+ {c:"c2",id:"mov",t:"Antes, durante y después",
+  pat:["antes|planific|inicio|comienzo","durante|a los veinte|en un momento|mientras","despues|final|cierre|termina|cuaderno|campus"],min:2,
+  ok:"Se reconocen momentos de la escena (antes, durante, después).",
+  pista:"¿Qué cambia entre lo que Mariano planifica, lo que ocurre durante la clase y lo que queda abierto al final? ¿Qué señales lo muestran?",ref:"Becker Soares (1985, p. 1): el aula tal como es y lo que en ella transcurre"},
+ {c:"c2",id:"sosten",t:"Lo que los grupos sostienen",
+  pat:["sosten|apoyo|acompan|traduc|no quedar afuera|organizar|comunidad|cuidado"],min:1,
+  ok:"Se reconoce que los grupos cumplen funciones para los estudiantes.",
+  pista:"El caso menciona que esos grupos funcionan como sostén real. ¿Qué lugar tiene ese dato en su lectura de la escena?",ref:"Caso, párrafo 5"},
+ {c:"c3",id:"disp",t:"Formulación del punto en disputa",
+  pat:["disputa","\\bentre\\b"],min:2,
+  ok:"Se formula un punto en disputa «entre» dos términos.",
+  pista:"¿Cómo quedaría la fórmula «En la escena aparece un punto en disputa entre ___ y ___»?",ref:"Consigna del caso"},
+ {c:"c3",id:"logica",t:"Lógicas o criterios, no personas",
+  pat:["logica|criterio|racionalidad|modelo|concepcion|paradigma|supuesto|legitim"],min:1,
+  ok:"El punto se plantea en términos de lógicas, criterios o supuestos.",
+  pista:"¿Entre qué lógicas o criterios (más que entre personas) podría pensarse el punto en disputa?",ref:"Desarrollo de la Semana 1, apartado 3.2"},
+ {c:"c3",id:"saber",t:"Qué cuenta como saber",
+  pat:["que cuenta como saber|cuenta como saber|saber legitimo|validar|validez|justific|criterios de verdad|autoridad|quien decide","fuente|texto|link|internet|\\bia\\b|docente"],min:2,
+  ok:"Se vincula el punto con qué cuenta como saber y cómo se justifica.",
+  pista:"El caso se pregunta quién decide qué cuenta como saber y cómo se justifica una afirmación. ¿Cómo dialoga eso con el punto que formularon?",ref:"De Alba (1998, p. 59); supuestos epistemológicos"},
+ {c:"c3",id:"preg",t:"Preguntas abiertas",
+  raw:true,pat:["\\?"],min:1,
+  ok:"Quedan preguntas abiertas.",
+  pista:"¿Qué 1 o 2 preguntas deja abiertas ese punto en disputa?",ref:"Consigna del caso"}
+];
+/* Marcas de resolución o corrección: no se tratan como error; se devuelven como pregunta. */
+var RESOL=["deberia","tendria que","habria que","hay que","lo mejor es","recomendaria","tendria que haber","deberia haber","prohibir","la solucion"];
+var CLAVES=[
+ ["Dos lógicas de validación","Podría leerse una tensión entre una lógica que valida por referencia al texto del programa y una lógica que valida por circulación, inmediatez y pertenencia al grupo. ¿Qué queda visible y qué invisible en cada una?","De Alba (1998, p. 59); Dussel y Roldán (2023)"],
+ ["Tres capas simultáneas","El caso describe una discusión oral, otra escrita en los celulares y otra en grupos donde Mariano no está. ¿Qué pasa con la idea de «aula» cuando las capas no coinciden?","Becker Soares (1985, p. 1)"],
+ ["Sostén y control","Los grupos aparecen a la vez como circuito paralelo y como sostén. ¿Qué lecturas de la escena se abren si ambas cosas se sostienen al mismo tiempo?","Bárcena y Mèlich (2000, p. 14): condiciones de acogida"],
+ ["Lo declarado y lo operado","Mariano busca una lectura situada y el parcial pide desarrollo. ¿Qué distancia puede haber entre lo que se valora declarativamente y lo que la evaluación termina pidiendo?","Desarrollo de la Semana 1, apartado 3.1"],
+ ["Escalas","Del «hilo del grupo» al parcial y al campus hay condicionantes de escala micro, meso y macro. ¿Cuáles se vuelven visibles al mirar con distancia?","Edelstein (2022, p. 49)"]
+];
+function analizarCaso(){
+  var campos=["c-1","c-2","c-3"].map(function(id){ return $(id).value; });
+  var rawAll=campos.join(" \n ");
+  var normPor={c1:norm(campos[0]),c2:norm(campos[1]),c3:norm(campos[2])};
+  var normAll=norm(rawAll);
+  var palabras=normAll?normAll.split(" ").length:0;
+  return {campos:campos,rawAll:rawAll,normPor:normPor,normAll:normAll,palabras:palabras};
+}
+function evaluarCriterio(cr,a){
+  var texto=cr.raw ? a.rawAll : a.normAll;
+  // la fórmula y las lógicas se buscan en el punto 3 + el resto; el resto, en todo el texto
+  var n=0;
+  cr.pat.forEach(function(p){ if(new RegExp(p,cr.raw?"":"i").test(texto)) n++; });
+  return n>=cr.min;
+}
+function contarCaso(){
+  var a=analizarCaso();
+  $("c-cuenta").textContent="Palabras escritas: "+a.palabras+(a.palabras<40?" (la devolución se arma a partir de unas 40 palabras)":"");
+}
+["c-1","c-2","c-3"].forEach(function(id){ $(id).addEventListener("input",contarCaso); });
+contarCaso();
+
+function devolucionCaso(){
+  var a=analizarCaso(), box=$("c-dev"); clear(box); $("c-msg").textContent="";
+  if(a.palabras<40){
+    $("c-msg").textContent="Para armar la devolución hacen falta unas 40 palabras en total. Pueden seguir escribiendo.";
+    return;
+  }
+  if(a.rawAll.length>6000){
+    $("c-msg").textContent="El texto es muy extenso para la devolución automática. Pueden sintetizarlo en unas 900 palabras.";
+    return;
+  }
+  habilitar();
+  var cubiertos=[], faltan=[];
+  CRIT.forEach(function(cr){ (evaluarCriterio(cr,a)?cubiertos:faltan).push(cr); });
+
+  var t1=el("div",{"class":"tiempo"},[el("h3",{text:"1 · Lo que aparece en su análisis"})]);
+  if(cubiertos.length){
+    cubiertos.forEach(function(cr){ t1.appendChild(el("div",{"class":"lente"},[el("b",{text:cr.t+". "}),cr.ok])); });
+  } else {
+    t1.appendChild(el("p",{text:"Todavía no se reconocen los criterios de la consigna. Quizás ayude releer el caso y marcar qué frases sostienen cada punto."}));
+  }
+  box.appendChild(t1);
+
+  var t2=el("div",{"class":"tiempo"},[el("h3",{text:"2 · Preguntas que podrían ayudar a profundizar"})]);
+  if(faltan.length){
+    faltan.forEach(function(cr){
+      t2.appendChild(el("div",{"class":"lente"},[el("b",{text:cr.t+": "}),cr.pista,el("div",{"class":"small",text:"Para volver a: "+cr.ref})]));
+    });
+  } else {
+    t2.appendChild(el("p",{text:"Aparecen todos los criterios de la consigna. ¿Cuál de esas entradas ordenó a las demás en su análisis?"}));
+  }
+  var res=RESOL.filter(function(w){ return a.normAll.indexOf(w)>=0; });
+  if(res.length){
+    t2.appendChild(el("div",{"class":"lente"},[el("b",{text:"Una formulación para mirar: "}),
+      "Aparecen expresiones que orientan a resolver o corregir («"+res.slice(0,3).join("», «")+"»). ¿Qué pasaría si esas ideas se reformularan como preguntas sobre lo que está en disputa?",
+      el("div",{"class":"small",text:"Consigna del caso: identificar lógicas y lo que queda en disputa entre ellas"})]));
+  }
+  box.appendChild(t2);
+
+  var t3=el("div",{"class":"tiempo"},[el("h3",{text:"3 · Entradas que el caso permite abrir"}),
+    el("p",{"class":"small",text:"No son respuestas esperadas: muestran caminos posibles para contrastar con lo que escribieron."})]);
+  CLAVES.forEach(function(k){
+    t3.appendChild(el("div",{"class":"lente"},[el("b",{text:k[0]+". "}),k[1],el("div",{"class":"small",text:"Para volver a: "+k[2]})]));
+  });
+  box.appendChild(t3);
+  box.appendChild(el("p",{"class":"small",text:"Esta devolución se arma buscando palabras y expresiones del desarrollo en su texto; no lee el sentido de lo que escribieron ni evalúa su calidad. Una idea puede estar presente aunque se exprese con otras palabras."}));
+}
+function textoCopiable(){
+  var a=analizarCaso();
+  var partes=["Caso «Profe, ¿podemos usar fuentes online en el parcial?»","",
+   "1 · Situación y condiciones de posibilidad",a.campos[0],"",
+   "2 · Relación didáctica en movimiento",a.campos[1],"",
+   "3 · Punto en disputa",a.campos[2]];
+  var d=$("c-dev");
+  if(d.textContent){ partes.push("","Devolución del simulador",d.innerText||d.textContent); }
+  return partes.join("\n");
+}
+function copiarCaso(){
+  var txt=textoCopiable();
+  function ok(){ $("c-msg").textContent="Copiado. Pueden pegarlo en un documento o en el chat."; }
+  function plan(){
+    var ta=el("textarea",{"aria-label":"Texto para copiar"}); ta.value=txt;
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); ok(); }catch(e){ $("c-msg").textContent="No se pudo copiar automáticamente; pueden seleccionar el texto de los tres cuadros."; }
+    document.body.removeChild(ta);
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(ok,plan);
+  } else { plan(); }
+}
+$("c-ver").addEventListener("click",devolucionCaso);
+$("c-ir-mapa").addEventListener("click",function(){ showTab("t-mapa"); });
+$("c-copiar").addEventListener("click",copiarCaso);
+$("c-reset").addEventListener("click",function(){
+  ["c-1","c-2","c-3"].forEach(function(id){ $(id).value=""; });
+  clear($("c-dev")); $("c-msg").textContent=""; contarCaso();
+});
+
+/* ---------- 3 · ESCENAS ---------- */
+var LENTES={
+ ped:{n:"Lectura pedagógica",v:"Abre la pregunta por el sentido formativo y por lo que se da por obvio.",q:"¿Qué sentido formativo sostiene esta decisión y qué se naturaliza en ella?",r:"Brailovsky (2018, p. 8)"},
+ did:{n:"Lectura didáctica",v:"Mira la decisión en situación: consignas, tiempos, tareas y evaluación.",q:"¿Qué estrategias vehiculizan (o no) los fines que se declaran?",r:"Edelstein y Rodríguez (1974), citadas en Steiman (2023)"},
+ ant:{n:"Supuesto antropológico",v:"Hace visible la idea de sujeto que aprende: palabra, tareas, relación con el error.",q:"¿Qué sujeto se imagina en esta escena?",r:"Desarrollo de la Semana 1, apartado 1.3"},
+ epi:{n:"Supuesto epistemológico",v:"Hace visible qué cuenta como saber y qué saberes quedan afuera.",q:"¿Qué se legitima como conocimiento y qué queda como saber «menor»?",r:"De Alba (1998, p. 59)"},
+ eti:{n:"Supuesto ético",v:"Pone en primer plano las condiciones de acogida y la responsabilidad.",q:"¿Qué condiciones de acogida hay para quien llega?",r:"Bárcena y Mèlich (2000, p. 14)"},
+ mac:{n:"Escala macro",v:"Sitúa condicionantes del contexto histórico-social.",q:"¿Qué condicionantes del contexto más amplio atraviesan la escena?",r:"Edelstein (2022, p. 49)"},
+ mes:{n:"Escala meso",v:"Sitúa condicionantes del tipo de organización institucional.",q:"¿Qué aporta la organización institucional a lo que ocurre?",r:"Edelstein (2022, p. 49)"},
+ mic:{n:"Escala micro",v:"Mira el aula: expectativas, representaciones mutuas, procesos interactivos.",q:"¿Qué expectativas y representaciones mutuas se juegan en el aula?",r:"Edelstein (2022, p. 49)"},
+ dec:{n:"Declarado y operado",v:"Contrasta lo que se dice sostener con lo que se concreta.",q:"¿Qué distancia hay entre lo que se declara y lo que se hace?",r:"Desarrollo de la Semana 1, apartado 3.1"},
+ mod:{n:"Lógica o modelo que manda",v:"Identifica qué teoría implícita o lógica orienta la decisión.",q:"¿Qué lógica manda en esta decisión, qué deja ver y qué deja afuera?",r:"Desarrollo de la Semana 1, apartados 3.2 y 3.3"}
+};
+var ESCENAS=[
+ {t:"Dos nombres para un mismo hecho",
+  texto:"En una clase de Historia de secundaria, el docente reparte dos fuentes sobre la llegada de los españoles a América: una la llama «descubrimiento» y otra «conquista». Pide una escritura posterior. La lectura y la discusión ocupan los últimos veinte minutos de la hora. Intervienen quienes suelen intervenir. En la evaluación del mes se pregunta por fechas y nombres.",
+  obs:[
+   ["La consigna: si pide resumir, o comparar y argumentar","did"],
+   ["El tiempo real que hubo para leer y discutir","did"],
+   ["Quiénes hablaron y qué pasó con los silencios","mic"],
+   ["Qué se valora en la evaluación: repetir datos o construir una postura con evidencias","epi"],
+   ["Qué concepción del conocimiento histórico sostiene esta decisión","ped"],
+   ["Qué idea de sujeto subyace: alguien capaz de argumentar o un receptor de información","ant"],
+   ["Lo que la organización escolar permite: horas, calendario de evaluaciones","mes"],
+   ["Qué versiones de la historia circulan en el currículum y desde qué intereses","mac"]],
+  lentes:["did","ped","ant","epi","mic","mes","mac"],
+  abierta:"¿Esta decisión habilita una mirada crítica que reconoce que toda interpretación está situada y porta intereses, o reproduce un relativismo donde «todas las versiones valen lo mismo»?",
+  ref:"Desarrollo de la Semana 1, apartado 1.1"},
+ {t:"El video, el grupo y la pauta",
+  texto:"Un docente reemplaza su exposición por un video. Organiza trabajo grupal: cada integrante prepara una parte y luego se juntan las partes. Pide un producto «creativo» y lo evalúa según si responde correctamente a su pauta.",
+  obs:[
+   ["Cambió el soporte: qué lugar queda para quien aprende","mod"],
+   ["La expectativa de que se «consuma» información para luego reproducirla","epi"],
+   ["Cómo se reparten la palabra y la tarea dentro del grupo","ant"],
+   ["Qué se entiende por colaborar: dividir tareas o construir juntos","mod"],
+   ["La pauta con la que se evalúa lo «creativo»","dec"],
+   ["El tiempo que la institución asigna a la unidad","mes"],
+   ["Las condiciones tecnológicas y de contexto en que circula el video","mac"],
+   ["Qué decisiones de consigna y formato se tomaron","did"]],
+  lentes:["mod","ant","epi","dec","mes","mac","did"],
+  abierta:"¿Qué lógica cambió con el video y cuál sigue mandando?",
+  ref:"Desarrollo de la Semana 1, apartado 3.3"},
+ {t:"Lo que decimos y lo que pedimos",
+  texto:"En la planificación de una asignatura figuran el pensamiento crítico, el aprendizaje colaborativo y el error como parte del proceso. En el aula, las evaluaciones piden reproducción literal, las tareas son individuales y el error resta puntaje.",
+  obs:[
+   ["La distancia entre la planificación y las tareas efectivas","dec"],
+   ["Qué idea de aprendizaje organiza las decisiones aunque no se nombre","mod"],
+   ["La relación con el error: sanción, análisis o insumo","ant"],
+   ["Qué tipo de evidencia se acepta como conocimiento","epi"],
+   ["Lo que piden los documentos institucionales y la política evaluativa","mes"],
+   ["Los mandatos sociales sobre la calificación","mac"],
+   ["Los sentidos formativos de evaluar de este modo","ped"],
+   ["La secuencia de consignas y tiempos","did"]],
+  lentes:["dec","mod","ant","epi","mes","mac","ped","did"],
+  abierta:"¿Qué modelos, tradiciones y mandatos conviven detrás de esa distancia?",
+  ref:"Desarrollo de la Semana 1, apartado 3.1"},
+ {t:"Quien llega a mitad de cuatrimestre",
+  texto:"A mitad del cuatrimestre se incorpora una estudiante que trae otra variante de la lengua y otros códigos de estudio. El docente le dice: «acá se hace así». Le pide ponerse al día con las lecturas y rendir la misma evaluación que el resto.",
+  obs:[
+   ["Las condiciones de acogida para entrar al trabajo con el saber","eti"],
+   ["Cómo se mira a quien llega: destinatario que se adecúa o exterioridad que interpela","ant"],
+   ["Si la evaluación orienta y abre oportunidad o funciona como filtro","did"],
+   ["Qué saberes de la estudiante tienen lugar en la clase","epi"],
+   ["Las normas de ingreso y permanencia de la institución","mes"],
+   ["Las políticas y desigualdades que atraviesan la llegada","mac"],
+   ["Lo que ocurre entre ambos en el aula: expectativas y representaciones mutuas","mic"],
+   ["Qué sentido formativo se le da a «ponerse al día»","ped"]],
+  lentes:["eti","ant","did","epi","mes","mac","mic","ped"],
+  abierta:"¿Qué podría aparecer en la clase si quien llega no viniera a encajar en el molde?",
+  ref:"Bárcena y Mèlich (2000, pp. 14-15)"}
+];
+var escIdx=0;
+function renderEscenaSel(){
+  var box=$("escena-sel"); clear(box);
+  ESCENAS.forEach(function(e,i){
+    var b=el("button",{"class":"chip","aria-pressed":i===escIdx?"true":"false",text:(i+1)+" · "+e.t});
+    if(i===escIdx){ b.style.background="var(--tinta)"; b.style.color="#fff"; }
+    b.addEventListener("click",function(){ escIdx=i; renderEscena(); });
+    box.appendChild(b);
+  });
+}
+function renderEscena(){
+  var e=ESCENAS[escIdx];
+  renderEscenaSel();
+  $("e-titulo").textContent=e.t;
+  $("e-texto").textContent=e.texto;
+  var box=$("e-obs"); clear(box);
+  e.obs.forEach(function(o,i){
+    var id="obs-"+escIdx+"-"+i;
+    var inp=el("input",{type:"checkbox",id:id,"data-lente":o[1]});
+    var lab=el("label",{"class":"obs","for":id},[inp, el("span",{text:o[0]})]);
+    box.appendChild(lab);
+  });
+  clear($("e-dev"));
+}
+function devolucion(){
+  var e=ESCENAS[escIdx], dev=$("e-dev"); clear(dev);
+  var marcadas=[].slice.call(document.querySelectorAll("#e-obs input:checked"));
+  if(!marcadas.length){
+    dev.appendChild(el("p",{"class":"small",text:"Para armar la devolución, pueden marcar al menos una observación."}));
+    return;
+  }
+  var elegidas={}; marcadas.forEach(function(i){ elegidas[i.getAttribute("data-lente")]=true; });
+  var sin=e.lentes.filter(function(k){ return !elegidas[k]; });
+
+  var t1=el("div",{"class":"tiempo"},[el("h3",{text:"1 · Lo que eligieron mirar"})]);
+  Object.keys(elegidas).forEach(function(k){
+    t1.appendChild(el("div",{"class":"lente"},[el("b",{text:LENTES[k].n+". "}),LENTES[k].v]));
+  });
+  dev.appendChild(t1);
+
+  var t2=el("div",{"class":"tiempo"},[el("h3",{text:"2 · Lo que podría mirarse también"})]);
+  if(sin.length){
+    sin.forEach(function(k){
+      t2.appendChild(el("div",{"class":"lente"},[el("b",{text:LENTES[k].n+": "}),LENTES[k].q,
+        el("div",{"class":"small",text:"Para volver a: "+LENTES[k].r})]));
+    });
+  } else {
+    t2.appendChild(el("p",{text:"Recorrieron todas las entradas de esta escena. ¿Cómo se tensionan o se necesitan entre sí? ¿Qué entrada tendió a ordenar a las demás?"}));
+  }
+  dev.appendChild(t2);
+
+  var t3=el("div",{"class":"tiempo"},[el("h3",{text:"3 · Para seguir pensando"}),
+    el("p",{text:e.abierta}),
+    el("p",{"class":"small",text:"Fuente: "+e.ref+". Esta devolución no evalúa su selección: muestra qué entradas quedaron en juego."})]);
+  dev.appendChild(t3);
+}
+$("e-ver").addEventListener("click",devolucion);
+$("e-reset").addEventListener("click",renderEscena);
+
+/* ---------- 4 · PREGUNTAS ---------- */
+var PREG=[
+ {q:"Becker Soares cuestiona la fórmula «enseñanza-aprendizaje». ¿Qué advierte?",
+  o:[["Que omite el lugar de la evaluación en la clase",0,"Esta idea no aparece en el texto."],
+     ["Que hace suponer que de la enseñanza necesariamente resulta aprendizaje",1,"Es la advertencia que figura en el texto."],
+     ["Que prioriza la técnica sobre el contenido",0,"Esta idea no aparece en ese pasaje."]],
+  cita:"hace suponer que de la enseñanza necesariamente resulta aprendizaje, lo que no es verdad",ref:"Becker Soares (1985, p. 3)",
+  abre:"¿Qué cambia al leer el aprendizaje como referente y no como consecuencia asegurada?"},
+ {q:"Según Steiman, ¿qué comparten la escuela tradicional, la activa y el tecnicismo?",
+  o:[["Un mismo posicionamiento teórico-ideológico",0,"Steiman señala que cada uno tiene un posicionamiento distinto."],
+     ["La centralidad del aprendizaje de los estudiantes",0,"No es lo que el texto destaca como rasgo común."],
+     ["Una lógica normativa: el problema didáctico es con qué herramienta se regula la práctica",1,"Coincide con el planteo del capítulo."]],
+  cita:"los tres normaban",ref:"Steiman (2023, p. 17)",
+  abre:"¿Qué lema sobre «una buena clase» atraviesa su propia formación?"},
+ {q:"Para volver la práctica objeto de análisis, el desarrollo propone tres movimientos. ¿Cuáles?",
+  o:[["Distanciamiento, extrañamiento y análisis conceptual",1,"Son los tres movimientos del apartado 2.1."],
+     ["Planificación, ejecución y evaluación",0,"Es otra secuencia; no figura en el apartado."],
+     ["Observación, juicio y corrección",0,"El apartado 2.3 plantea suspender el juicio."]],
+  cita:"asumir un necesario distanciamiento; que lo familiar se vuelva extraño",ref:"Edelstein (2022)",
+  abre:"¿Qué práctica propia podría volverse extraña?"},
+ {q:"¿Qué sentido tiene la «polifonía de voces» al documentar una práctica?",
+  o:[["Registrar la mayor cantidad posible de clases",0,"El texto habla de voces, no de cantidad de clases."],
+     ["Reunir la opinión de especialistas externos",0,"No es lo que plantea el pasaje."],
+     ["Reconstruir la práctica con palabras, gestos y silencios, materiales, tiempos y producciones, además de la voz docente",1,"Coincide con el apartado 2.2."]],
+  cita:"reclaman de manera inexorable una polifonía de voces",ref:"Edelstein (2022, p. 59)",
+  abre:"¿Qué voz falta hoy en su registro?"},
+ {q:"A escala meso, Edelstein ubica condicionantes que remiten a:",
+  o:[["El contexto histórico-social más amplio",0,"Corresponde a la escala macro."],
+     ["El tipo de organización institucional en que se inscribe la práctica",1,"Es la escala meso."],
+     ["Las representaciones mutuas dentro del aula",0,"Corresponde a la escala micro."]],
+  cita:"a escala meso, aquellos que aluden al tipo de organización en que inscribe esta práctica",ref:"Edelstein (2022, p. 49)",
+  abre:"¿Qué condicionante institucional aparece en lo que viven como problema del aula?"},
+ {q:"Bárcena y Mèlich contraponen a la «fabricación» del otro:",
+  o:[["La transmisión eficaz de saberes",0,"No es la contraposición que formulan."],
+     ["La mediación tecnológica",0,"No figura en ese pasaje."],
+     ["El acogimiento hospitalario de los recién llegados",1,"Es la expresión que usan."]],
+  cita:"acogimiento hospitalario de los recién llegados",ref:"Bárcena y Mèlich (2000, p. 14)",
+  abre:"¿Qué condiciones de acogida podrían nombrarse en su práctica?"},
+ {q:"«Decimos que el error es parte del proceso, pero lo penalizamos con puntaje» ilustra:",
+  o:[["Un problema de planificación por objetivos",0,"El apartado 3.1 lo lee de otro modo."],
+     ["Un déficit de formación disciplinar",0,"El apartado 3.1 ubica la grieta en otro lugar."],
+     ["Una distancia entre el nivel declarativo y el operativo",1,"Es la lectura del apartado 3.1."]],
+  cita:"Decimos que el error es parte del proceso, pero lo tratamos como falta y lo penalizamos con puntaje",ref:"Desarrollo de la Semana 1, apartado 3.1",
+  abre:"¿Qué modelos o mandatos conviven detrás de esa distancia?"},
+ {q:"En el desarrollo, las teorías implícitas son:",
+  o:[["Teorías científicas que se aplican sin citar",0,"El desarrollo aclara que no son teorías científicas."],
+     ["Hipótesis que se formulan antes de investigar",0,"No es la definición del apartado 3.3."],
+     ["Esquemas prácticos sobre enseñar y aprender que orientan decisiones aunque no se hayan formulado",1,"Es la definición del apartado 3.3."]],
+  cita:null,ref:"Desarrollo de la Semana 1, apartado 3.3",
+  abre:"¿Qué teoría implícita podría estar orientando una decisión reciente?"},
+ {q:"Según Souto, citada por Anijovich y Cappelletti, ¿qué lugar tiene la teoría en el análisis?",
+  o:[["Un tercero que facilita el pensar",1,"Coincide con la cita."],
+     ["La verdad que se aplica a la práctica",0,"La cita señala otra posición."],
+     ["Un requisito previo a toda experiencia",0,"La cita parte de la experiencia."]],
+  cita:"un camino que parte de la experiencia y no de la teoría, de manera tal que el conocimiento y los saberes se ponen al servicio de aquella, entran en juego como terceros que facilitan el pensar y no como verdad teórica a aplicar",ref:"Souto (2016, p. 77), en Anijovich y Cappelletti (2021)",
+  abre:"¿Qué teoría les ayudaría a nombrar algo que intuían de su práctica?"},
+ {q:"Entre las orientaciones para formar en práctica reflexiva, Anijovich y Cappelletti mencionan:",
+  o:[["Una secuencia lineal de actividades",0,"El texto propone otra lógica."],
+     ["La evaluación individual y anónima",0,"No figura en las orientaciones."],
+     ["Una lógica recursiva y espiralada, y un clima de confianza con suspensión del juicio",1,"Coincide con las orientaciones 1 y 2."]],
+  cita:"una lógica recursiva, espiralada y no una secuencia lineal de actividades",ref:"Anijovich y Cappelletti (2021, p. 21)",
+  abre:"¿Qué condiciones de confianza existen hoy en los espacios donde analizan su práctica?"}
+];
+var qi=0, respuestas=[];
+function progQ(){
+  var hechas=respuestas.filter(function(r){return r!==undefined;}).length;
+  $("prog-q").style.width=(100*hechas/PREG.length)+"%";
+  $("q-estado").textContent="Pregunta "+(qi+1)+" de "+PREG.length+" · respondidas: "+hechas;
+}
+function renderQ(){
+  var p=PREG[qi];
+  $("q-enun").textContent=p.q;
+  var box=$("q-opts"); clear(box);
+  p.o.forEach(function(o,i){
+    var b=el("button",{"class":"opt","aria-pressed":respuestas[qi]===i?"true":"false",text:o[0]});
+    if(respuestas[qi]!==undefined) b.disabled=true;
+    b.addEventListener("click",function(){ respuestas[qi]=i; renderQ(); });
+    box.appendChild(b);
+  });
+  var dev=$("q-dev"); clear(dev);
+  if(respuestas[qi]!==undefined){
+    var o=p.o[respuestas[qi]];
+    var t=el("div",{"class":"tiempo"});
+    t.appendChild(el("h3",{text:o[1]?"Coincide con la lectura":"Una entrada posible; la lectura va por otro lado"}));
+    t.appendChild(el("p",{text:o[2]}));
+    if(!o[1]){
+      var ok=p.o.filter(function(x){return x[1];})[0];
+      t.appendChild(el("p",{"class":"small",text:"En la fuente aparece: "+ok[0]+"."}));
+    }
+    if(p.cita) t.appendChild(el("blockquote",null,["«"+p.cita+"»",el("cite",{text:p.ref})]));
+    else t.appendChild(el("p",{"class":"small",text:"Fuente: "+p.ref}));
+    t.appendChild(el("div",{"class":"para-pensar"},[el("b",{text:"Para seguir pensando: "}),p.abre]));
+    dev.appendChild(t);
+  }
+  $("q-ant").disabled=(qi===0);
+  $("q-sig").textContent=(qi===PREG.length-1)?"Ver recorrido":"Siguiente";
+  progQ();
+}
+function resumen(){
+  var ok=0, volver=[];
+  PREG.forEach(function(p,i){
+    if(respuestas[i]!==undefined && p.o[respuestas[i]][1]) ok++;
+    else volver.push(p);
+  });
+  $("q-enun").textContent="Recorrido de la serie";
+  clear($("q-opts"));
+  var dev=$("q-dev"); clear(dev);
+  var hechas=respuestas.filter(function(r){return r!==undefined;}).length;
+  dev.appendChild(el("p",{text:"Coincidencias con la lectura: "+ok+" de "+PREG.length+" (respondidas: "+hechas+"). Es una referencia para orientar el regreso a los textos."}));
+  if(volver.length){
+    dev.appendChild(el("h3",{text:"Textos a los que tal vez convenga volver"}));
+    var ul=el("ul");
+    volver.forEach(function(p){ ul.appendChild(el("li",{text:p.ref+" — "+p.q})); });
+    dev.appendChild(ul);
+  } else {
+    dev.appendChild(el("p",{text:"Todas las respuestas coincidieron con la lectura. ¿Qué pregunta nueva les dejó el recorrido?"}));
+  }
+  $("q-estado").textContent="";
+  progQ();
+}
+$("q-ant").addEventListener("click",function(){ if(qi>0){ qi--; renderQ(); } });
+$("q-sig").addEventListener("click",function(){
+  if(qi<PREG.length-1){ qi++; renderQ(); } else { resumen(); }
+});
+$("q-reset").addEventListener("click",function(){ qi=0; respuestas=[]; renderQ(); });
+
+/* ---------- arranque ---------- */
+renderCols(); progMapa(); renderEscena(); renderQ();
+})();
+</script>
+</body>
+</html>
